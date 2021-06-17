@@ -38,9 +38,7 @@ $fnlist['unigw'] = [
     $keyfunc = $args['keyfunc'] ?? 'nokeyfunc';
 
     $need_basic_auth = false;
-    $basic_auth_user = '';
-    $basic_auth_pass = '';
-    $basic_auth_pattern = [ '__auth_basic_user__', '__auth_basic_pass__' ];
+    $cfg_auth_keys = [ '__cfg_auth_type' ];
     $tbl = "ext_auth";
     $sql = "SELECT * FROM `{$tbl}` WHERE `ext_keyword`='{$keyword}' AND `published`=1";
     try {
@@ -48,13 +46,10 @@ $fnlist['unigw'] = [
       while ($row = $result->fetch_object()) {
 	$auth_key = $row->auth_key;
 	$auth_val = $row->auth_value;
-	if (in_array($auth_key, $basic_auth_pattern)) {
+	if (in_array($auth_key, $cfg_auth_keys)) {
 	  $need_basic_auth = true;
-	  if ($auth_key == '__auth_basic_user__') {
-	    $basic_auth_user = $row->auth_val;
-	  } else if ($auth_key == '__auth_basic_pass__') {
-	    $basic_auth_pass = $row->auth_val;
-	  }
+	} else {
+	  $auth_kv[$auth_key] = $auth_val;
 	}
       }
     } catch (Exception $e) {
@@ -96,7 +91,6 @@ $fnlist['unigw'] = [
 	$robj->msg = 'Query Execution Failed [func].';
 	goto out;
       }
-
       
     }
 
