@@ -34,65 +34,97 @@ $fnlist['unigw'] = [
       goto out;
     }
 
+    $namespace = $args['namespace'] ?? 'default';
     $keyword = $args['keyword'] ?? 'nokeyword';
     $keyfunc = $args['keyfunc'] ?? 'nokeyfunc';
 
-    $need_basic_auth = false;
-    $cfg_auth_keys = [ '__cfg_auth_type' ];
-    $tbl = "ext_auth";
-    $sql = "SELECT * FROM `{$tbl}` WHERE `ext_keyword`='{$keyword}' AND `published`=1";
+    $svc_info = [];
+
+    $tbl_prefix = "ext_"; # Default, will be overriden by subsequent lines
+    $tbl = "ugw_ns"; # first look up in namespace
+    $sql = "SELECT * FROM `{$tbl}` WHERE `ns`='{$namespace}' AND `svc_keyword`='{$keyword}' AND `published`=1 LIMIT 1";
     try {
       $result = $db->query($sql);
-      while ($row = $result->fetch_object()) {
-	$auth_key = $row->auth_key;
-	$auth_val = $row->auth_value;
-	if (in_array($auth_key, $cfg_auth_keys)) {
-	  $need_basic_auth = true;
-	} else {
-	  $auth_kv[$auth_key] = $auth_val;
-	}
-      }
+      $row = $result->fetch_assoc();
+      $tbl_prefix = $row['svc_prefix'];
+      $svc_id = $row['svc_id'];
+      $svc_info['ns'] = $row;
     } catch (Exception $e) {
-      $robj->msg = 'Query Execution Failed [auth].';
+      $robj->msg = 'Query Execution Failed [ns].';
       goto out;
     }
 
-    $tbl = "ext_common";
-    $sql = "SELECT * FROM `{$tbl}` WHERE `ext_keyword`='{$keyword}' AND `published`=1 LIMIT 1";
+    $tbl = "{$tbl_prefix}common";
+    $sql = "SELECT * FROM `{$tbl}` WHERE `svc_ic`={$svc_id} AND `published`=1 LIMIT 1";
     try {
       $result = $db->query($sql);
-      $row = $result->fetch_object();
+      $row = $result->fetch_assoc();
+      $need_auth = $row['need_auth'];
+      $svc_info['common'] = $row;
     } catch (Exception $e) {
       $robj->msg = 'Query Execution Failed [common].';
       goto out;
     }
 
-    $ext_id = $row->id;
-    $tbl = "ext_func";
-    $sql = "SELECT * FROM `{$tbl}` WHERE `ext_id`={$ext_id} AND `func_name`='{$keyfunc}' AND `published`=1 LIMIT 1";
+
+    if ($need_auth) {
+      $tbl = "{$tbl_prefix}auth";
+      $sql = "SELECT * FROM `{$tbl}` WHERE `svc_id`={$svc_id} AND `published`=1";
+      try {
+	$result = $db->query($sql);
+	while ($row = $result->fetch_assoc()) {
+	  $svc_info['auth'][] = $row;
+	}
+      } catch (Exception $e) {
+	$robj->msg = 'Query Execution Failed [auth].';
+	goto out;
+      }
+    }
+
+    $tbl = "{$tbl_prefix}func";
+    $sql = "SELECT * FROM `{$tbl}` WHERE `svc_id`={$svc_id} AND `func_name`='{$keyfunc}' AND `published`=1 LIMIT 1";
     try {
       $result = $db->query($sql);
-      $row = $result->fetch_object();
+      $row = $result->fetch_assoc();
+      $svc_info['func'] = $row;
+      $func_has_args = $row['has_args'];
+      $func_has_headers = $row['has_headers'];
+      $func_id = $row['id'];
     } catch (Exception $e) {
       $robj->msg = 'Query Execution Failed [func].';
       goto out;
     }
 
-    $func_id = $row->id;
-    if ($row->has_args != 0) {
-      $tbl = "ext_func_arg";
+    if ($func_has_args != 0) {
+      $tbl = "{$tbl_prefix}func_arg";
       $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`={$func_id} AND `published`=1";
       try {
 	$result = $db->query($sql);
-	while ($row = $result->fetch_object()) {
-	  $func_args[] = $row;
+	while ($row = $result->fetch_assoc()) {
+	  $svc_info['func_arg'][] = $row;
 	}
       } catch (Exception $e) {
-	$robj->msg = 'Query Execution Failed [func].';
+	$robj->msg = 'Query Execution Failed [func_arg].';
 	goto out;
       }
-      
     }
+
+    if ($func_has_headers != 0) {
+      $tbl = "{$tbl_prefix}func_header";
+      $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`={$func_id} AND `published`=1";
+      try {
+	$result = $db->query($sql);
+	while ($row = $result->fetch_assoc()) {
+	  $svc_info['func_header'][] = $row;
+	}
+      } catch (Exception $e) {
+	$robj->msg = 'Query Execution Failed [func_header].';
+	goto out;
+      }
+    }
+
+
+    # Now we have all the information to invoke real API call
 
     
 
