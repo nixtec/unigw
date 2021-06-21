@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3314
--- Generation Time: Jun 21, 2021 at 03:06 PM
+-- Generation Time: Jun 21, 2021 at 05:01 PM
 -- Server version: 10.2.22-MariaDB
 -- PHP Version: 7.4.4
 
@@ -24,37 +24,37 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ext_auth`
+-- Table structure for table `ext_ep_auth`
 --
 
-CREATE TABLE `ext_auth` (
+CREATE TABLE `ext_ep_auth` (
   `id` int(11) NOT NULL,
   `ep_id` int(11) NOT NULL,
-  `ep_title` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
   `auth_key` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
   `auth_value` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `auth_arg_desc` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
   `published` tinyint(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `ext_auth`
+-- Dumping data for table `ext_ep_auth`
 --
 
-INSERT INTO `ext_auth` (`id`, `ep_id`, `ep_title`, `auth_key`, `auth_value`, `published`) VALUES
-(1, 1, 'Name.com Development username for Authenticating API', 'username', 'nixtec.systems-test', 1),
-(2, 1, 'Name.com Development password for Authenticating API', 'password', '2f95a2ca5fb473595c3d472b0878ed719e2e0023', 1),
-(3, 1, 'Name.com authentication type configuration', '__cfg_auth_type', 'http_auth_basic', 1);
+INSERT INTO `ext_ep_auth` (`id`, `ep_id`, `auth_key`, `auth_value`, `auth_arg_desc`, `published`) VALUES
+(1, 1, 'username', 'nixtec.systems-test', 'Authentication Username', 1),
+(2, 1, 'password', '2f95a2ca5fb473595c3d472b0878ed719e2e0023', 'Authentication Password (Token)', 1),
+(3, 1, '__cfg_auth_type', 'http_auth_basic', '', 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ext_common`
+-- Table structure for table `ext_ep_config`
 --
 
-CREATE TABLE `ext_common` (
+CREATE TABLE `ext_ep_config` (
   `id` int(11) NOT NULL,
-  `svc_id` int(11) NOT NULL,
-  `svc_baseurl` varchar(512) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ep_id` int(11) NOT NULL,
+  `ep_baseurl` varchar(512) COLLATE utf8mb4_unicode_ci NOT NULL,
   `need_auth` tinyint(4) NOT NULL DEFAULT 0,
   `req_proto` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'http',
   `req_method` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'post',
@@ -68,21 +68,22 @@ CREATE TABLE `ext_common` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `ext_common`
+-- Dumping data for table `ext_ep_config`
 --
 
-INSERT INTO `ext_common` (`id`, `svc_id`, `svc_baseurl`, `need_auth`, `req_proto`, `req_method`, `req_datatype`, `resp_datatype`, `conn_timeout_msec`, `resp_timeout_msec`, `retry_after_conn_timeout`, `wait_before_retry_msec`, `published`) VALUES
+INSERT INTO `ext_ep_config` (`id`, `ep_id`, `ep_baseurl`, `need_auth`, `req_proto`, `req_method`, `req_datatype`, `resp_datatype`, `conn_timeout_msec`, `resp_timeout_msec`, `retry_after_conn_timeout`, `wait_before_retry_msec`, `published`) VALUES
 (1, 1, 'https://api.dev.name.com/v4', 1, 'http/1.1', 'post', 'json', 'json', 10000, 60000, 0, 5000, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ext_func`
+-- Table structure for table `ext_ep_func`
 --
 
-CREATE TABLE `ext_func` (
+CREATE TABLE `ext_ep_func` (
   `id` int(11) NOT NULL,
   `ep_id` int(11) NOT NULL,
+  `func_id` int(11) NOT NULL,
   `func_name` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
   `has_args` tinyint(4) NOT NULL DEFAULT 0,
   `has_headers` tinyint(4) NOT NULL DEFAULT 0,
@@ -90,19 +91,19 @@ CREATE TABLE `ext_func` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `ext_func`
+-- Dumping data for table `ext_ep_func`
 --
 
-INSERT INTO `ext_func` (`id`, `ep_id`, `func_name`, `has_args`, `has_headers`, `published`) VALUES
-(1, 1, 'hello', 0, 0, 1);
+INSERT INTO `ext_ep_func` (`id`, `ep_id`, `func_id`, `func_name`, `has_args`, `has_headers`, `published`) VALUES
+(1, 1, 1, 'hello', 0, 0, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ext_func_arg`
+-- Table structure for table `ext_ep_func_arg`
 --
 
-CREATE TABLE `ext_func_arg` (
+CREATE TABLE `ext_ep_func_arg` (
   `id` int(11) NOT NULL,
   `func_id` int(11) NOT NULL,
   `arg_key` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -113,10 +114,10 @@ CREATE TABLE `ext_func_arg` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ext_func_header`
+-- Table structure for table `ext_ep_func_header`
 --
 
-CREATE TABLE `ext_func_header` (
+CREATE TABLE `ext_ep_func_header` (
   `id` int(11) NOT NULL,
   `func_id` int(11) NOT NULL,
   `arg_key` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -218,37 +219,37 @@ INSERT INTO `map_ns_ep` (`id`, `ns_id`, `ep_id`, `published`) VALUES
 --
 
 --
--- Indexes for table `ext_auth`
+-- Indexes for table `ext_ep_auth`
 --
-ALTER TABLE `ext_auth`
+ALTER TABLE `ext_ep_auth`
   ADD PRIMARY KEY (`id`),
   ADD KEY `svc_id` (`ep_id`,`published`);
 
 --
--- Indexes for table `ext_common`
+-- Indexes for table `ext_ep_config`
 --
-ALTER TABLE `ext_common`
+ALTER TABLE `ext_ep_config`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `svc_id` (`svc_id`,`published`);
+  ADD UNIQUE KEY `svc_id` (`ep_id`,`published`);
 
 --
--- Indexes for table `ext_func`
+-- Indexes for table `ext_ep_func`
 --
-ALTER TABLE `ext_func`
+ALTER TABLE `ext_ep_func`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `svc_func` (`ep_id`,`func_name`,`published`);
 
 --
--- Indexes for table `ext_func_arg`
+-- Indexes for table `ext_ep_func_arg`
 --
-ALTER TABLE `ext_func_arg`
+ALTER TABLE `ext_ep_func_arg`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `func_arg` (`func_id`,`arg_key`,`published`) USING BTREE;
 
 --
--- Indexes for table `ext_func_header`
+-- Indexes for table `ext_ep_func_header`
 --
-ALTER TABLE `ext_func_header`
+ALTER TABLE `ext_ep_func_header`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `func_arg` (`func_id`,`arg_key`,`published`) USING BTREE;
 
@@ -281,33 +282,33 @@ ALTER TABLE `map_ns_ep`
 --
 
 --
--- AUTO_INCREMENT for table `ext_auth`
+-- AUTO_INCREMENT for table `ext_ep_auth`
 --
-ALTER TABLE `ext_auth`
+ALTER TABLE `ext_ep_auth`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `ext_common`
+-- AUTO_INCREMENT for table `ext_ep_config`
 --
-ALTER TABLE `ext_common`
+ALTER TABLE `ext_ep_config`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `ext_func`
+-- AUTO_INCREMENT for table `ext_ep_func`
 --
-ALTER TABLE `ext_func`
+ALTER TABLE `ext_ep_func`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `ext_func_arg`
+-- AUTO_INCREMENT for table `ext_ep_func_arg`
 --
-ALTER TABLE `ext_func_arg`
+ALTER TABLE `ext_ep_func_arg`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `ext_func_header`
+-- AUTO_INCREMENT for table `ext_ep_func_header`
 --
-ALTER TABLE `ext_func_header`
+ALTER TABLE `ext_ep_func_header`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
