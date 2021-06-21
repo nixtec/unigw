@@ -1,6 +1,9 @@
 # unigw
 Universal Gateway (for API, etc.)
 
+Development Guideline: https://docs.google.com/document/d/1tZTb19fYpr6NffgOFD1PVbKd3VeKi58LhsXr6r0pHIE/edit?usp=sharing
+
+
 How to run:
 
 $ git clone https://github.com/nixtec/unigw.git
