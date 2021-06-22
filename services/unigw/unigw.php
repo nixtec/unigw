@@ -21,6 +21,8 @@ $fnlist['unigw'] = [
     $fnlist['mysqlpool']['init'](['app' => 'unigw', 'config' => $dbconfig ]);
   },
 
+  # following is just demonstration code
+  # After writing the code the database schema was changed, so it has to be written from scratch
   'external' => function ($args=null) use (&$fnlist) {
     $rcode = 500;
     $robj = new stdClass();
