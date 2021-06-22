@@ -104,6 +104,7 @@ foreach ($svc_listen as $k => $v) {
 	}
 
       break;
+      case 'udp':
 	$type = SWOOLE_SOCK_UDP;
 	if ($path != '') {
 	  $host = $path;
