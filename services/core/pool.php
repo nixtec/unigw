@@ -21,10 +21,11 @@ $fnlist['pool'] = [
     switch ($type) {
       case 'mysqli':
       case 'mysql':
-      $__ds[$app][$ckey][$id] = new Swoole\Database\MysqliPool($cfg);
+        $__ds[$app][$ckey][$id] = new Swoole\Database\MysqliPool($cfg);
       break;
+
       default:
-      return [ 403, "Unrecognised Pool Configuration type [{$type}]." ];
+        return [ 403, "Unrecognised Pool Configuration type [{$type}]." ];
       break;
     }
     return [ 200, "Pool Configuration Added [{$app}/{$ckey}/{$id}]." ];

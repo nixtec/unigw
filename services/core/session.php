@@ -44,15 +44,15 @@ $fnlist['session'] = [
       ) {
       /*
       if ($sid == null) {
-	echo "Initializing New Session\n";
+	      echo "Initializing New Session\n";
       } else {
-	echo "Expiring old session Data [sid=$sid] and Initializing New Session\n";
+	      echo "Expiring old session Data [sid=$sid] and Initializing New Session\n";
       }
       */
       do {
         $sid = uniqid($app) . rand(100000, 999999);
-	$xargs['key'] = $sid;
-	$xargs['col'] = $col;
+        $xargs['key'] = $sid;
+        $xargs['col'] = $col;
         list($code, $bool) = $fnlist['cache']['exists']($xargs);
       } while ($bool === true);
       #echo "new sid=$sid\n";

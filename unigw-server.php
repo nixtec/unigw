@@ -20,19 +20,19 @@ $svc_map = [
 ];
 $svc_opts = [
   'http' => [
-  	'http_parse_post' => true,
-	#'worker_num' => 4*16,
-	#'worker_num' => 16,
-	#'worker_num' => 1,
-	#'reactor_num' => 16,
-	'open_cpu_affinity' => 1,
-	'enable_reuse_port' => true,
-  	'open_http_protocol' => true,
-	'open_http2_protocol' => true,
-	'open_websocket_protocol' => true,
-	#'ssl_key_file' => 'privatekey.pem',
-	#'ssl_cert_file' => 'publickey.pem',
-	],
+    'http_parse_post' => true,
+    #'worker_num' => 4*16,
+    #'worker_num' => 16,
+    #'worker_num' => 1,
+    #'reactor_num' => 16,
+    'open_cpu_affinity' => 1,
+    'enable_reuse_port' => true,
+    'open_http_protocol' => true,
+    'open_http2_protocol' => true,
+    'open_websocket_protocol' => true,
+    #'ssl_key_file' => 'privatekey.pem',
+    #'ssl_cert_file' => 'publickey.pem',
+  ],
   'tcp' => [],
   'udp' => [],
   'mqtt' => ['open_mqtt_protocol' => true],
@@ -64,67 +64,68 @@ foreach ($svc_listen as $k => $v) {
     switch ($scheme) {
       case 'http':
       case 'https':
-	$type = SWOOLE_SOCK_TCP;
-	if ($path != '') {
-	  $host = $path;
-	  $port = 0;
-	  $type = SWOOLE_UNIX_STREAM;
-	  unlink($path);
-	} else if (substr($host, 0, 1) == '[') { # ipv6 address
-	  $host = trim($host, '[]'); # remove the []
-	  $type = SWOOLE_SOCK_TCP6;
-	}
+        $type = SWOOLE_SOCK_TCP;
+        if ($path != '') {
+          $host = $path;
+          $port = 0;
+          $type = SWOOLE_UNIX_STREAM;
+          unlink($path);
+        } else if (substr($host, 0, 1) == '[') { # ipv6 address
+          $host = trim($host, '[]'); # remove the []
+          $type = SWOOLE_SOCK_TCP6;
+        }
 
-	if ($scheme == 'https') $type |= SWOOLE_SSL;
+        if ($scheme == 'https') $type |= SWOOLE_SSL;
 
-	if ($srv == false) {
-	  $srv = new Swoole\WebSocket\Server($host, $port, $svc_mode, $type);
-	} else {
-	  $srv->addListener($host, $port, $type);
-	}
+        if ($srv == false) {
+          $srv = new Swoole\WebSocket\Server($host, $port, $svc_mode, $type);
+        } else {
+          $srv->addListener($host, $port, $type);
+        }
       break;
+
       case 'tcp':
-	$type = SWOOLE_SOCK_TCP;
-	if ($path != '') {
-	  $host = $path;
-	  $port = 0;
-	  $type = SWOOLE_UNIX_STREAM;
-	  unlink($path);
-	} else if (substr($host, 0, 1) == '[') { # ipv6 address
-	  $host = trim($host, '[]'); # remove the []
-	  $type = SWOOLE_SOCK_TCP6;
-	}
+        $type = SWOOLE_SOCK_TCP;
+        if ($path != '') {
+          $host = $path;
+          $port = 0;
+          $type = SWOOLE_UNIX_STREAM;
+          unlink($path);
+        } else if (substr($host, 0, 1) == '[') { # ipv6 address
+          $host = trim($host, '[]'); # remove the []
+          $type = SWOOLE_SOCK_TCP6;
+        }
 
-	if ($scheme == 'tcps') $type |= SWOOLE_SSL;
+        if ($scheme == 'tcps') $type |= SWOOLE_SSL;
 
-	if ($srv == false) {
-	  $srv = new Swoole\Server($host, $port, $svc_mode, $type);
-	} else {
-	  $srv->addListener($host, $port, $type);
-	}
-
+        if ($srv == false) {
+          $srv = new Swoole\Server($host, $port, $svc_mode, $type);
+        } else {
+          $srv->addListener($host, $port, $type);
+        }
       break;
+
       case 'udp':
-	$type = SWOOLE_SOCK_UDP;
-	if ($path != '') {
-	  $host = $path;
-	  $port = 0;
-	  $type = SWOOLE_UNIX_DGRAM;
-	  unlink($path);
-	} else if (substr($host, 0, 1) == '[') { # ipv6 address
-	  $host = trim($host, '[]'); # remove the []
-	  $type = SWOOLE_SOCK_UDP6;
-	}
+        $type = SWOOLE_SOCK_UDP;
+        if ($path != '') {
+          $host = $path;
+          $port = 0;
+          $type = SWOOLE_UNIX_DGRAM;
+          unlink($path);
+        } else if (substr($host, 0, 1) == '[') { # ipv6 address
+          $host = trim($host, '[]'); # remove the []
+          $type = SWOOLE_SOCK_UDP6;
+        }
 
-	if ($scheme == 'udps') $type |= SWOOLE_SSL;
+        if ($scheme == 'udps') $type |= SWOOLE_SSL;
 
-	if ($srv == false) {
-	  $srv = new Swoole\Server($host, $port, $svc_mode, $type);
-	} else {
-	  $srv->addListener($host, $port, $type);
-	}
-
+        if ($srv == false) {
+          $srv = new Swoole\Server($host, $port, $svc_mode, $type);
+        } else {
+          $srv->addListener($host, $port, $type);
+        }
       break;
+      
       default:
       break;
     }

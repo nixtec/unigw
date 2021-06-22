@@ -261,7 +261,7 @@ $fnlist['cache'] = [
       $key = $tbl->key();
       $row = $tbl->current();
       if (($curtime - $row['__ts']) > $exptime) {
-	#print_r($row);
+        #print_r($row);
         $tbl->del($key);
       }
       $tbl->next();

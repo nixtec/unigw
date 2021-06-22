@@ -13,22 +13,20 @@ $fnlist['mysqlpool'] = [
 
 
     $cfg = (new Swoole\Database\MysqliConfig())
-    	->withHost($config['host'] ?? $default_config['host'])
-	->withPort($config['port'] ?? $default_config['port'])
-	#->withUnixSocket($config['sock'] ?? $default_config['sock'])
-	->withCharset($config['charset'] ?? $default_config['charset'])
-	->withDbname($config['dbname'] ?? $default_config['dbname'])
-	->withUsername($config['username'] ?? $default_config['username'])
-	->withPassword($config['password'] ?? $default_config['password']);
-
+      ->withHost($config['host'] ?? $default_config['host'])
+      ->withPort($config['port'] ?? $default_config['port'])
+      #->withUnixSocket($config['sock'] ?? $default_config['sock'])
+      ->withCharset($config['charset'] ?? $default_config['charset'])
+      ->withDbname($config['dbname'] ?? $default_config['dbname'])
+      ->withUsername($config['username'] ?? $default_config['username'])
+      ->withPassword($config['password'] ?? $default_config['password']);
 
     $sconfig = [ 'app' => $app, 'id' => $id, 'title' => $config['title'] ?? 'MySQL Pool', 'type' => $type, 'cfg' => $cfg ];
-
     #print_r($sconfig);
 
     echo "Configuring MySQL Pool [{$config['title']}]\n";
     return $fnlist['pool']['addcfg']($sconfig);
-  }, 
+  },
 
 ];
 

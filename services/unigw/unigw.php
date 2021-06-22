@@ -9,12 +9,12 @@ $fnlist['unigw'] = [
   'init' => function ($args=null) use (&$fnlist) {
     // now configure DB Pool
     $dbconfig = [
-      'title' => 'MySQL Pool',
-      'host' => '127.0.0.1',
-      'port' => 3314,
-      'sock' => '/var/run/mysqld/mysqld-nixtec.sock',
-      'dbname' => 'unigw_dev',
-      'charset' => 'utf8mb4',
+      'title'    => 'MySQL Pool',
+      'host'     => '127.0.0.1',
+      'port'     => 3314,
+      'sock'     => '/var/run/mysqld/mysqld-nixtec.sock',
+      'dbname'   => 'unigw_dev',
+      'charset'  => 'utf8mb4',
       'username' => 'unigwdev',
       'password' => 'un1gwd3v#@!'
     ];
@@ -71,13 +71,13 @@ $fnlist['unigw'] = [
       $tbl = "{$tbl_prefix}auth";
       $sql = "SELECT * FROM `{$tbl}` WHERE `svc_id`={$svc_id} AND `published`=1";
       try {
-	$result = $db->query($sql);
-	while ($row = $result->fetch_assoc()) {
-	  $svc_info['auth'][] = $row;
-	}
+        $result = $db->query($sql);
+        while ($row = $result->fetch_assoc()) {
+          $svc_info['auth'][] = $row;
+        }
       } catch (Exception $e) {
-	$robj->msg = 'Query Execution Failed [auth].';
-	goto out;
+        $robj->msg = 'Query Execution Failed [auth].';
+        goto out;
       }
     }
 
@@ -99,13 +99,13 @@ $fnlist['unigw'] = [
       $tbl = "{$tbl_prefix}func_arg";
       $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`={$func_id} AND `published`=1";
       try {
-	$result = $db->query($sql);
-	while ($row = $result->fetch_assoc()) {
-	  $svc_info['func_arg'][] = $row;
-	}
+        $result = $db->query($sql);
+        while ($row = $result->fetch_assoc()) {
+          $svc_info['func_arg'][] = $row;
+        }
       } catch (Exception $e) {
-	$robj->msg = 'Query Execution Failed [func_arg].';
-	goto out;
+        $robj->msg = 'Query Execution Failed [func_arg].';
+        goto out;
       }
     }
 
@@ -113,13 +113,13 @@ $fnlist['unigw'] = [
       $tbl = "{$tbl_prefix}func_header";
       $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`={$func_id} AND `published`=1";
       try {
-	$result = $db->query($sql);
-	while ($row = $result->fetch_assoc()) {
-	  $svc_info['func_header'][] = $row;
-	}
+        $result = $db->query($sql);
+        while ($row = $result->fetch_assoc()) {
+          $svc_info['func_header'][] = $row;
+        }
       } catch (Exception $e) {
-	$robj->msg = 'Query Execution Failed [func_header].';
-	goto out;
+        $robj->msg = 'Query Execution Failed [func_header].';
+        goto out;
       }
     }
 
