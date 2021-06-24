@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3314
--- Generation Time: Jun 21, 2021 at 05:01 PM
+-- Generation Time: Jun 24, 2021 at 02:23 PM
 -- Server version: 10.2.22-MariaDB
 -- PHP Version: 7.4.4
 
@@ -84,7 +84,8 @@ CREATE TABLE `ext_ep_func` (
   `id` int(11) NOT NULL,
   `ep_id` int(11) NOT NULL,
   `func_id` int(11) NOT NULL,
-  `func_name` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `func_name_ns` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `func_name_ep` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
   `has_args` tinyint(4) NOT NULL DEFAULT 0,
   `has_headers` tinyint(4) NOT NULL DEFAULT 0,
   `published` tinyint(4) NOT NULL DEFAULT 0
@@ -94,8 +95,8 @@ CREATE TABLE `ext_ep_func` (
 -- Dumping data for table `ext_ep_func`
 --
 
-INSERT INTO `ext_ep_func` (`id`, `ep_id`, `func_id`, `func_name`, `has_args`, `has_headers`, `published`) VALUES
-(1, 1, 1, 'hello', 0, 0, 1);
+INSERT INTO `ext_ep_func` (`id`, `ep_id`, `func_id`, `func_name_ns`, `func_name_ep`, `has_args`, `has_headers`, `published`) VALUES
+(1, 1, 1, 'noop', 'hello', 0, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -168,7 +169,30 @@ CREATE TABLE `ls_ns` (
 
 INSERT INTO `ls_ns` (`id`, `ns_id`, `ns_keyword`, `ns_desc`, `published`) VALUES
 (1, 1, 'default', 'Default Namespace', 1),
-(2, 2, 'domain', 'Domain registrars', 1);
+(2, 2, 'domain', 'Domain registrars', 1),
+(3, 3, 'sms', 'Short Message Service', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ls_ns_func`
+--
+
+CREATE TABLE `ls_ns_func` (
+  `id` int(11) NOT NULL,
+  `ns_id` int(11) NOT NULL DEFAULT 1,
+  `ep_id` int(11) NOT NULL,
+  `func_name` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `published` tinyint(4) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `ls_ns_func`
+--
+
+INSERT INTO `ls_ns_func` (`id`, `ns_id`, `ep_id`, `func_name`, `published`) VALUES
+(1, 2, 1, 'noop', 1),
+(2, 1, 0, 'noop', 1);
 
 -- --------------------------------------------------------
 
@@ -237,7 +261,7 @@ ALTER TABLE `ext_ep_config`
 --
 ALTER TABLE `ext_ep_func`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `svc_func` (`ep_id`,`func_name`,`published`);
+  ADD UNIQUE KEY `svc_func` (`ep_id`,`func_name_ns`,`published`);
 
 --
 -- Indexes for table `ext_ep_func_arg`
@@ -263,6 +287,12 @@ ALTER TABLE `ls_ep`
 -- Indexes for table `ls_ns`
 --
 ALTER TABLE `ls_ns`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `ls_ns_func`
+--
+ALTER TABLE `ls_ns_func`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -321,6 +351,12 @@ ALTER TABLE `ls_ep`
 -- AUTO_INCREMENT for table `ls_ns`
 --
 ALTER TABLE `ls_ns`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `ls_ns_func`
+--
+ALTER TABLE `ls_ns_func`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
