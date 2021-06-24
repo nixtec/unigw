@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg
+PUBLIC "-//W3C//DTD SVG 1.1//EN"
+       "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg viewBox="92 54 857 665" width="765px" height="611px" xmlns="http://www.w3.org/2000/svg" version="1.1">
+   <rect width="108" height="20" x="310" y="210" style="fill:#007;stroke:black;"/>
+   <text width="108" height="20" x="315" y="224" style="fill:#fff;" font-family="Arial" font-size="16px"> ext_ep_auth</text>
+   <rect width="108" height="20" x="310" y="230" style="fill:#aea;stroke:black;"/>
+   <text width="108" height="20" x="315" y="244" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="108" height="20" x="310" y="250" style="fill:none;stroke:black;"/>
+   <text width="108" height="20" x="315" y="264" style="fill:black;" font-family="Arial" font-size="16px">ep_id</text>
+   <rect width="108" height="20" x="310" y="270" style="fill:none;stroke:black;"/>
+   <text width="108" height="20" x="315" y="284" style="fill:black;" font-family="Arial" font-size="16px">auth_key</text>
+   <rect width="108" height="20" x="310" y="290" style="fill:none;stroke:black;"/>
+   <text width="108" height="20" x="315" y="304" style="fill:black;" font-family="Arial" font-size="16px">auth_value</text>
+   <rect width="108" height="20" x="310" y="310" style="fill:none;stroke:black;"/>
+   <text width="108" height="20" x="315" y="324" style="fill:black;" font-family="Arial" font-size="16px">auth_arg_desc</text>
+   <rect width="108" height="20" x="310" y="330" style="fill:none;stroke:black;"/>
+   <text width="108" height="20" x="315" y="344" style="fill:black;" font-family="Arial" font-size="16px">published</text>
+   <rect width="176" height="20" x="110" y="370" style="fill:#007;stroke:black;"/>
+   <text width="176" height="20" x="115" y="384" style="fill:#fff;" font-family="Arial" font-size="16px"> ext_ep_config</text>
+   <rect width="176" height="20" x="110" y="390" style="fill:#aea;stroke:black;"/>
+   <text width="176" height="20" x="115" y="404" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="176" height="20" x="110" y="410" style="fill:none;stroke:black;"/>
+   <text width="176" height="20" x="115" y="424" style="fill:black;" font-family="Arial" font-size="16px">ep_id</text>
+   <rect width="176" height="20" x="110" y="430" style="fill:none;stroke:black;"/>
+   <text width="176" height="20" x="115" y="444" style="fill:black;" font-family="Arial" font-size="16px">ep_baseurl</text>
+   <rect width="176" height="20" x="110" y="450" style="fill:none;stroke:black;"/>
+   <text width="176" height="20" x="115" y="464" style="fill:black;" font-family="Arial" font-size="16px">need_auth</text>
+   <rect width="176" height="20" x="110" y="470" style="fill:none;stroke:black;"/>
+   <text width="176" height="20" x="115" y="484" style="fill:black;" font-family="Arial" font-size="16px">req_proto</text>
+   <rect width="176" height="20" x="110" y="490" style="fill:none;stroke:black;"/>
+   <text width="176" height="20" x="115" y="504" style="fill:black;" font-family="Arial" font-size="16px">req_method</text>
+   <rect width="176" height="20" x="110" y="510" style="fill:none;stroke:black;"/>
+   <text width="176" height="20" x="115" y="524" style="fill:black;" font-family="Arial" font-size="16px">req_datatype</text>
+   <rect width="176" height="20" x="110" y="530" style="fill:none;stroke:black;"/>
+   <text width="176" height="20" x="115" y="544" style="fill:black;" font-family="Arial" font-size="16px">resp_datatype</text>
+   <rect width="176" height="20" x="110" y="550" style="fill:none;stroke:black;"/>
+   <text width="176" height="20" x="115" y="564" style="fill:black;" font-family="Arial" font-size="16px">conn_timeout_msec</text>
+   <rect width="176" height="20" x="110" y="570" style="fill:none;stroke:black;"/>
+   <text width="176" height="20" x="115" y="584" style="fill:black;" font-family="Arial" font-size="16px">resp_timeout_msec</text>
+   <rect width="176" height="20" x="110" y="590" style="fill:none;stroke:black;"/>
+   <text width="176" height="20" x="115" y="604" style="fill:black;" font-family="Arial" font-size="16px">retry_after_conn_timeout</text>
+   <rect width="176" height="20" x="110" y="610" style="fill:none;stroke:black;"/>
+   <text width="176" height="20" x="115" y="624" style="fill:black;" font-family="Arial" font-size="16px">wait_before_retry_msec</text>
+   <rect width="176" height="20" x="110" y="630" style="fill:none;stroke:black;"/>
+   <text width="176" height="20" x="115" y="644" style="fill:black;" font-family="Arial" font-size="16px">published</text>
+   <rect width="108" height="20" x="350" y="370" style="fill:#007;stroke:black;"/>
+   <text width="108" height="20" x="355" y="384" style="fill:#fff;" font-family="Arial" font-size="16px"> ext_ep_func</text>
+   <rect width="108" height="20" x="350" y="390" style="fill:#aea;stroke:black;"/>
+   <text width="108" height="20" x="355" y="404" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="108" height="20" x="350" y="410" style="fill:none;stroke:black;"/>
+   <text width="108" height="20" x="355" y="424" style="fill:black;" font-family="Arial" font-size="16px">ep_id</text>
+   <rect width="108" height="20" x="350" y="430" style="fill:none;stroke:black;"/>
+   <text width="108" height="20" x="355" y="444" style="fill:black;" font-family="Arial" font-size="16px">func_id</text>
+   <rect width="108" height="20" x="350" y="450" style="fill:none;stroke:black;"/>
+   <text width="108" height="20" x="355" y="464" style="fill:black;" font-family="Arial" font-size="16px">func_name_ns</text>
+   <rect width="108" height="20" x="350" y="470" style="fill:none;stroke:black;"/>
+   <text width="108" height="20" x="355" y="484" style="fill:black;" font-family="Arial" font-size="16px">func_name_ep</text>
+   <rect width="108" height="20" x="350" y="490" style="fill:none;stroke:black;"/>
+   <text width="108" height="20" x="355" y="504" style="fill:black;" font-family="Arial" font-size="16px">has_args</text>
+   <rect width="108" height="20" x="350" y="510" style="fill:none;stroke:black;"/>
+   <text width="108" height="20" x="355" y="524" style="fill:black;" font-family="Arial" font-size="16px">has_headers</text>
+   <rect width="108" height="20" x="350" y="530" style="fill:none;stroke:black;"/>
+   <text width="108" height="20" x="355" y="544" style="fill:black;" font-family="Arial" font-size="16px">published</text>
+   <rect width="114" height="20" x="520" y="210" style="fill:#007;stroke:black;"/>
+   <text width="114" height="20" x="525" y="224" style="fill:#fff;" font-family="Arial" font-size="16px"> ext_ep_func_arg</text>
+   <rect width="114" height="20" x="520" y="230" style="fill:#aea;stroke:black;"/>
+   <text width="114" height="20" x="525" y="244" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="114" height="20" x="520" y="250" style="fill:none;stroke:black;"/>
+   <text width="114" height="20" x="525" y="264" style="fill:black;" font-family="Arial" font-size="16px">func_id</text>
+   <rect width="114" height="20" x="520" y="270" style="fill:none;stroke:black;"/>
+   <text width="114" height="20" x="525" y="284" style="fill:black;" font-family="Arial" font-size="16px">arg_key</text>
+   <rect width="114" height="20" x="520" y="290" style="fill:none;stroke:black;"/>
+   <text width="114" height="20" x="525" y="304" style="fill:black;" font-family="Arial" font-size="16px">arg_value</text>
+   <rect width="114" height="20" x="520" y="310" style="fill:none;stroke:black;"/>
+   <text width="114" height="20" x="525" y="324" style="fill:black;" font-family="Arial" font-size="16px">published</text>
+   <rect width="142" height="20" x="490" y="70" style="fill:#007;stroke:black;"/>
+   <text width="142" height="20" x="495" y="84" style="fill:#fff;" font-family="Arial" font-size="16px"> ext_ep_func_header</text>
+   <rect width="142" height="20" x="490" y="90" style="fill:#aea;stroke:black;"/>
+   <text width="142" height="20" x="495" y="104" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="142" height="20" x="490" y="110" style="fill:none;stroke:black;"/>
+   <text width="142" height="20" x="495" y="124" style="fill:black;" font-family="Arial" font-size="16px">func_id</text>
+   <rect width="142" height="20" x="490" y="130" style="fill:none;stroke:black;"/>
+   <text width="142" height="20" x="495" y="144" style="fill:black;" font-family="Arial" font-size="16px">arg_key</text>
+   <rect width="142" height="20" x="490" y="150" style="fill:none;stroke:black;"/>
+   <text width="142" height="20" x="495" y="164" style="fill:black;" font-family="Arial" font-size="16px">arg_value</text>
+   <rect width="142" height="20" x="490" y="170" style="fill:none;stroke:black;"/>
+   <text width="142" height="20" x="495" y="184" style="fill:black;" font-family="Arial" font-size="16px">published</text>
+   <rect width="92" height="20" x="750" y="70" style="fill:#007;stroke:black;"/>
+   <text width="92" height="20" x="755" y="84" style="fill:#fff;" font-family="Arial" font-size="16px"> ls_ep</text>
+   <rect width="92" height="20" x="750" y="90" style="fill:#aea;stroke:black;"/>
+   <text width="92" height="20" x="755" y="104" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="92" height="20" x="750" y="110" style="fill:none;stroke:black;"/>
+   <text width="92" height="20" x="755" y="124" style="fill:black;" font-family="Arial" font-size="16px">ep_id</text>
+   <rect width="92" height="20" x="750" y="130" style="fill:none;stroke:black;"/>
+   <text width="92" height="20" x="755" y="144" style="fill:black;" font-family="Arial" font-size="16px">ep_keyword</text>
+   <rect width="92" height="20" x="750" y="150" style="fill:none;stroke:black;"/>
+   <text width="92" height="20" x="755" y="164" style="fill:black;" font-family="Arial" font-size="16px">ep_desc</text>
+   <rect width="92" height="20" x="750" y="170" style="fill:none;stroke:black;"/>
+   <text width="92" height="20" x="755" y="184" style="fill:black;" font-family="Arial" font-size="16px">ep_type</text>
+   <rect width="92" height="20" x="750" y="190" style="fill:none;stroke:black;"/>
+   <text width="92" height="20" x="755" y="204" style="fill:black;" font-family="Arial" font-size="16px">published</text>
+   <rect width="91" height="20" x="107" y="69" style="fill:#007;stroke:black;"/>
+   <text width="91" height="20" x="112" y="83" style="fill:#fff;" font-family="Arial" font-size="16px"> ls_ns</text>
+   <rect width="91" height="20" x="107" y="89" style="fill:#aea;stroke:black;"/>
+   <text width="91" height="20" x="112" y="103" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="91" height="20" x="107" y="109" style="fill:none;stroke:black;"/>
+   <text width="91" height="20" x="112" y="123" style="fill:black;" font-family="Arial" font-size="16px">ns_id</text>
+   <rect width="91" height="20" x="107" y="129" style="fill:none;stroke:black;"/>
+   <text width="91" height="20" x="112" y="143" style="fill:black;" font-family="Arial" font-size="16px">ns_keyword</text>
+   <rect width="91" height="20" x="107" y="149" style="fill:none;stroke:black;"/>
+   <text width="91" height="20" x="112" y="163" style="fill:black;" font-family="Arial" font-size="16px">ns_desc</text>
+   <rect width="91" height="20" x="107" y="169" style="fill:none;stroke:black;"/>
+   <text width="91" height="20" x="112" y="183" style="fill:black;" font-family="Arial" font-size="16px">published</text>
+   <rect width="85" height="20" x="300" y="70" style="fill:#007;stroke:black;"/>
+   <text width="85" height="20" x="305" y="84" style="fill:#fff;" font-family="Arial" font-size="16px"> ls_ns_func</text>
+   <rect width="85" height="20" x="300" y="90" style="fill:#aea;stroke:black;"/>
+   <text width="85" height="20" x="305" y="104" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="85" height="20" x="300" y="110" style="fill:none;stroke:black;"/>
+   <text width="85" height="20" x="305" y="124" style="fill:black;" font-family="Arial" font-size="16px">ns_id</text>
+   <rect width="85" height="20" x="300" y="130" style="fill:none;stroke:black;"/>
+   <text width="85" height="20" x="305" y="144" style="fill:black;" font-family="Arial" font-size="16px">ep_id</text>
+   <rect width="85" height="20" x="300" y="150" style="fill:none;stroke:black;"/>
+   <text width="85" height="20" x="305" y="164" style="fill:black;" font-family="Arial" font-size="16px">func_name</text>
+   <rect width="85" height="20" x="300" y="170" style="fill:none;stroke:black;"/>
+   <text width="85" height="20" x="305" y="184" style="fill:black;" font-family="Arial" font-size="16px">published</text>
+   <rect width="105" height="20" x="110" y="210" style="fill:#007;stroke:black;"/>
+   <text width="105" height="20" x="115" y="224" style="fill:#fff;" font-family="Arial" font-size="16px"> ls_type_ep</text>
+   <rect width="105" height="20" x="110" y="230" style="fill:#aea;stroke:black;"/>
+   <text width="105" height="20" x="115" y="244" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="105" height="20" x="110" y="250" style="fill:none;stroke:black;"/>
+   <text width="105" height="20" x="115" y="264" style="fill:black;" font-family="Arial" font-size="16px">type_id</text>
+   <rect width="105" height="20" x="110" y="270" style="fill:none;stroke:black;"/>
+   <text width="105" height="20" x="115" y="284" style="fill:black;" font-family="Arial" font-size="16px">type_keyword</text>
+   <rect width="105" height="20" x="110" y="290" style="fill:none;stroke:black;"/>
+   <text width="105" height="20" x="115" y="304" style="fill:black;" font-family="Arial" font-size="16px">type_desc</text>
+   <rect width="105" height="20" x="110" y="310" style="fill:none;stroke:black;"/>
+   <text width="105" height="20" x="115" y="324" style="fill:black;" font-family="Arial" font-size="16px">ep_tbl_prefix</text>
+   <rect width="105" height="20" x="110" y="330" style="fill:none;stroke:black;"/>
+   <text width="105" height="20" x="115" y="344" style="fill:black;" font-family="Arial" font-size="16px">published</text>
+   <rect width="86" height="20" x="740" y="230" style="fill:#007;stroke:black;"/>
+   <text width="86" height="20" x="745" y="244" style="fill:#fff;" font-family="Arial" font-size="16px"> map_ns_ep</text>
+   <rect width="86" height="20" x="740" y="250" style="fill:#aea;stroke:black;"/>
+   <text width="86" height="20" x="745" y="264" style="fill:black;" font-family="Arial" font-size="16px">id</text>
+   <rect width="86" height="20" x="740" y="270" style="fill:none;stroke:black;"/>
+   <text width="86" height="20" x="745" y="284" style="fill:black;" font-family="Arial" font-size="16px">ns_id</text>
+   <rect width="86" height="20" x="740" y="290" style="fill:none;stroke:black;"/>
+   <text width="86" height="20" x="745" y="304" style="fill:black;" font-family="Arial" font-size="16px">ep_id</text>
+   <rect width="86" height="20" x="740" y="310" style="fill:none;stroke:black;"/>
+   <text width="86" height="20" x="745" y="324" style="fill:black;" font-family="Arial" font-size="16px">published</text>
+</svg>
