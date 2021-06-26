@@ -11,7 +11,7 @@ $fnlist['unigw'] = [
     $dbconfig = [
       'title'    => 'MySQL Pool',
       'host'     => '127.0.0.1',
-      'port'     => 3314,
+      'port'     => 3306,
       'sock'     => '/var/run/mysqld/mysqld-nixtec.sock',
       'dbname'   => 'unigw_dev',
       'charset'  => 'utf8mb4',
@@ -20,126 +20,196 @@ $fnlist['unigw'] = [
     ];
     $fnlist['mysqlpool']['init'](['app' => 'unigw', 'config' => $dbconfig ]);
   },
-
-  # following is just demonstration code
-  # After writing the code the database schema was changed, so it has to be written from scratch
-  'external' => function ($args=null) use (&$fnlist) {
+  
+  'core' => function($args = null) use (&$fnlist){
     $rcode = 500;
     $robj = new stdClass();
     $robj->status = 1;
     $robj->msg = 'Something went wrong.';
     $robj->resp = false;
 
-    list ($code, $db) = $fnlist['pool']['get']([ 'app' => 'unigw', 'id' => 'mysqlpool' ]);
-    if ($code != 200) {
+    list($code, $db) = $fnlist['pool']['get']([ 'app' => 'unigw', 'id' => 'mysqlpool' ]);
+    if($code != 200){
       $robj->msg = 'DB Connection Failed.';
       goto out;
     }
 
-    $namespace = $args['namespace'] ?? 'default';
-    $keyword = $args['keyword'] ?? 'nokeyword';
-    $keyfunc = $args['keyfunc'] ?? 'nokeyfunc';
-
-    $svc_info = [];
-
-    $tbl_prefix = "ext_"; # Default, will be overriden by subsequent lines
-    $tbl = "ugw_ns"; # first look up in namespace
-    $sql = "SELECT * FROM `{$tbl}` WHERE `ns`='{$namespace}' AND `svc_keyword`='{$keyword}' AND `published`=1 LIMIT 1";
-    try {
+    $tbl = "ls_ns"; # first look up in namespace
+    $sql = "SELECT ns_id FROM `{$tbl}` WHERE `ns_keyword`='{$args['app']}' AND `published`=1 LIMIT 1;";
+    try{
       $result = $db->query($sql);
-      $row = $result->fetch_assoc();
-      $tbl_prefix = $row['svc_prefix'];
-      $svc_id = $row['svc_id'];
-      $svc_info['ns'] = $row;
-    } catch (Exception $e) {
-      $robj->msg = 'Query Execution Failed [ns].';
+      if($row = $result->fetch_assoc()){
+        $ns_id = $row['ns_id'];
+      } else{
+        throw new Exception('Query Execution Failed [ns].');
+      }
+    } catch (Exception $e){
+      $robj->msg = $e->getMessage();
       goto out;
     }
 
-    $tbl = "{$tbl_prefix}common";
-    $sql = "SELECT * FROM `{$tbl}` WHERE `svc_ic`={$svc_id} AND `published`=1 LIMIT 1";
-    try {
+    # get end-point id by namespace-id
+    if($args['ep'] == '-'){
+      $sql = "SELECT ep_id, func_name FROM `ls_ns_func` WHERE ns_id={$ns_id} AND published=1";
+    } else{
+      $tbl = "map_ns_ep";
+      $sql = "SELECT GROUP_CONCAT(ep_id) AS ep_id FROM `{$tbl}` WHERE ns_id={$ns_id} AND published=1 GROUP BY ns_id;";
+    }
+    try{
       $result = $db->query($sql);
-      $row = $result->fetch_assoc();
-      $need_auth = $row['need_auth'];
-      $svc_info['common'] = $row;
-    } catch (Exception $e) {
-      $robj->msg = 'Query Execution Failed [common].';
+      if($row = $result->fetch_assoc()){
+        $ep_id   = $row['ep_id'];
+        $ep_name = $row['func_name'] ?? $args['ep'];
+      } else{
+        throw new Exception('Query Execution Failed [ns-ep].');
+      }
+    } catch (Exception $e){
+      $robj->msg = $e->getMessage();
       goto out;
     }
 
-
-    if ($need_auth) {
-      $tbl = "{$tbl_prefix}auth";
-      $sql = "SELECT * FROM `{$tbl}` WHERE `svc_id`={$svc_id} AND `published`=1";
-      try {
-        $result = $db->query($sql);
-        while ($row = $result->fetch_assoc()) {
-          $svc_info['auth'][] = $row;
-        }
-      } catch (Exception $e) {
-        $robj->msg = 'Query Execution Failed [auth].';
-        goto out;
-      }
-    }
-
-    $tbl = "{$tbl_prefix}func";
-    $sql = "SELECT * FROM `{$tbl}` WHERE `svc_id`={$svc_id} AND `func_name`='{$keyfunc}' AND `published`=1 LIMIT 1";
-    try {
+    $tbl = "ls_ep"; # get end-point type-id
+    $sql = "SELECT ep_type FROM `{$tbl}` WHERE `ep_id` IN({$ep_id}) AND `ep_keyword`='{$ep_name}' AND `published`=1;";
+    try{
       $result = $db->query($sql);
-      $row = $result->fetch_assoc();
-      $svc_info['func'] = $row;
-      $func_has_args = $row['has_args'];
-      $func_has_headers = $row['has_headers'];
-      $func_id = $row['id'];
-    } catch (Exception $e) {
-      $robj->msg = 'Query Execution Failed [func].';
+      if($row = $result->fetch_assoc()){
+        $type_id = $row['ep_type'];
+      } else{
+        throw new Exception('Query Execution Failed [ep].');
+      }
+    } catch (Exception $e){
+      $robj->msg = $e->getMessage();
       goto out;
     }
 
-    if ($func_has_args != 0) {
-      $tbl = "{$tbl_prefix}func_arg";
-      $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`={$func_id} AND `published`=1";
-      try {
-        $result = $db->query($sql);
-        while ($row = $result->fetch_assoc()) {
-          $svc_info['func_arg'][] = $row;
-        }
-      } catch (Exception $e) {
-        $robj->msg = 'Query Execution Failed [func_arg].';
-        goto out;
+    $tbl = "ls_type_ep"; # get service type & table prefix
+    $sql = "SELECT * FROM `{$tbl}` WHERE `type_id`={$type_id} AND `published`=1 LIMIT 1;";
+    try{
+      $result = $db->query($sql);
+      if($row = $result->fetch_assoc()){
+        $service = $row['type_keyword'];
+        $tbl_prefix = $row['ep_tbl_prefix'];
+      } else{
+        throw new Exception('Query Execution Failed [ep].');
       }
+    } catch (Exception $e){
+      $robj->msg = $e->getMessage();
+      goto out;
     }
 
-    if ($func_has_headers != 0) {
-      $tbl = "{$tbl_prefix}func_header";
-      $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`={$func_id} AND `published`=1";
-      try {
-        $result = $db->query($sql);
-        while ($row = $result->fetch_assoc()) {
-          $svc_info['func_header'][] = $row;
-        }
-      } catch (Exception $e) {
-        $robj->msg = 'Query Execution Failed [func_header].';
-        goto out;
-      }
+    list($code, $resp) = $fnlist['unigw'][$service]($args, $db, $ep_id, $tbl_prefix);
+    if($code != 200){
+      $robj->msg = $resp;
+      goto out;
+
+    } else{
+      $robj->msg  = "success";
+      $robj->resp = $resp;
     }
-
-
-    # Now we have all the information to invoke real API call
-
-    
-
-
 
     out:
-    if (isset($db) && $db != false) {
+    if(isset($db) && $db != false){
       $fnlist['pool']['put']([ 'app' => 'unigw', 'id' => 'mysqlpool', 'handle' => $db ]);
       $db = false;
     }
 
-    return [ $rcode, json_encode($robj) ];
+    // return [$code, json_encode($robj)];
+    return [$code, $robj];
   },
+
+
+  # following is just demonstration code
+  # After writing the code the database schema was changed, so it has to be written from scratch
+  'external' => function ($args, $db, $ep_id, $tbl_prefix=null) use (&$fnlist){
+
+    $svc_info = $http_info = [];
+    $tbl_prefix = $tbl_prefix ?? "ext_";
+
+    $tbl = "{$tbl_prefix}ep_config"; // get API configuration
+    $sql = "SELECT * FROM `{$tbl}` WHERE `ep_id`='{$ep_id}' AND `published`=1 LIMIT 1";
+    try{
+      $result = $db->query($sql);
+      if($row = $result->fetch_assoc()){
+        $svc_info['config'] = $row;
+      } else{
+        throw new Exception('Query Execution Failed [config].');
+      }
+    } catch (Exception $e){
+      return [403, $e->getMessage()];
+    }
+
+    $tbl = "{$tbl_prefix}ep_func"; // get end-point function info
+    $sql = "SELECT * FROM `{$tbl}` WHERE `ep_id`='{$ep_id}' AND `published`=1";
+    try{
+      $result = $db->query($sql);
+      if($row = $result->fetch_assoc()){
+        $svc_info['ep_func'] = $row;
+      } else{
+        throw new Exception('Query Execution Failed [ep_func].');
+      }
+    } catch (Exception $e){
+      return [403, $e->getMessage()];
+    }
+
+    $http_info['url'] = $svc_info['config']['ep_baseurl'] . $svc_info['ep_func']['func_name_ep'];
+
+    if($svc_info['ep_func']['has_args'] == 1){
+      $tbl = "{$tbl_prefix}ep_func_arg"; // end-point function argument
+      $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`='{$ep_id}' AND `published`=1";
+      try{
+        if($result = $db->query($sql)){
+          $reqargs = $args['reqargs'];
+
+          while($row = $result->fetch_assoc()){
+            if(!isset($reqargs[$row['arg_key']])){
+              return [403, "The requested argument is not valid."];
+            }
+            $http_info['postdata'][$row['arg_value']] = $reqargs[$row['arg_key']];
+          }
+        } else{
+          throw new Exception('Query Execution Failed [func_arg].');
+        }
+      } catch (Exception $e){
+        return [403, $e->getMessage()];
+      }
+    }
+
+    if($svc_info['ep_func']['has_headers'] == 1){
+      $tbl = "{$tbl_prefix}ep_func_header"; // end-point function header
+      $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`='{$ep_id}' AND `published`=1";
+      try{
+        if($result = $db->query($sql)){
+          while($row = $result->fetch_assoc()){
+            $http_info['headers'][] = $row['arg_value'];
+          }
+        } else{
+          throw new Exception('Query Execution Failed [func_header].');
+        }
+      } catch (Exception $e){
+        return [403, $e->getMessage()];
+      }
+    }
+
+    if($svc_info['config']['need_auth'] == 1){
+      $tbl = "{$tbl_prefix}ep_auth"; // get authentication
+      $sql = "SELECT * FROM `{$tbl}` WHERE `ep_id`='{$ep_id}' AND `published`=1";
+      try{
+        if($result = $db->query($sql)){
+          while($row = $result->fetch_assoc()){
+            $http_info['auth'][$row['auth_key']] = $row['auth_value'];
+          }
+        } else{
+          throw new Exception('Query Execution Failed [auth].');
+        }
+      } catch (Exception $e){
+        return [403, $e->getMessage()];
+      }
+    }
+
+    print_r($svc_info);
+
+    return [200, $http_info];
+  }
 
 ];
 

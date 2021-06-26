@@ -41,9 +41,9 @@ CREATE TABLE `ext_ep_auth` (
 --
 
 INSERT INTO `ext_ep_auth` (`id`, `ep_id`, `auth_key`, `auth_value`, `auth_arg_desc`, `published`) VALUES
-(1, 1, 'username', 'nixtec.systems-test', 'Authentication Username', 1),
-(2, 1, 'password', '2f95a2ca5fb473595c3d472b0878ed719e2e0023', 'Authentication Password (Token)', 1),
-(3, 1, '__cfg_auth_type', 'http_auth_basic', '', 1);
+(1, 1, 'username', 'netcloudsys-test', 'Authentication Username', 1),
+(2, 1, 'password', '1d3f8592936d3fe29320413f68e30b1d64431e4d', 'Authentication Password (Token)', 1),
+(3, 1, 'auth_type', 'http_auth_basic', '', 1);
 
 -- --------------------------------------------------------
 
@@ -72,7 +72,7 @@ CREATE TABLE `ext_ep_config` (
 --
 
 INSERT INTO `ext_ep_config` (`id`, `ep_id`, `ep_baseurl`, `need_auth`, `req_proto`, `req_method`, `req_datatype`, `resp_datatype`, `conn_timeout_msec`, `resp_timeout_msec`, `retry_after_conn_timeout`, `wait_before_retry_msec`, `published`) VALUES
-(1, 1, 'https://api.dev.name.com/v4', 1, 'http/1.1', 'post', 'json', 'json', 10000, 60000, 0, 5000, 1);
+(1, 1, 'https://api.dev.name.com/v4/', 1, 'http/1.1', 'post', 'json', 'json', 10000, 60000, 0, 5000, 1);
 
 -- --------------------------------------------------------
 
@@ -96,7 +96,7 @@ CREATE TABLE `ext_ep_func` (
 --
 
 INSERT INTO `ext_ep_func` (`id`, `ep_id`, `func_id`, `func_name_ns`, `func_name_ep`, `has_args`, `has_headers`, `published`) VALUES
-(1, 1, 1, 'noop', 'hello', 0, 0, 1);
+(1, 1, 1, 'hello', 'domains:checkAvailability', 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -112,6 +112,13 @@ CREATE TABLE `ext_ep_func_arg` (
   `published` tinyint(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `ext_ep_func_arg`
+--
+
+INSERT INTO `ext_ep_func_arg` (`id`, `func_id`, `arg_key`, `arg_value`, `published`) VALUES
+(1, 1, 'names', 'domainNames', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -125,6 +132,13 @@ CREATE TABLE `ext_ep_func_header` (
   `arg_value` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
   `published` tinyint(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `ext_ep_func_header`
+--
+
+INSERT INTO `ext_ep_func_header` (`id`, `func_id`, `arg_key`, `arg_value`, `published`) VALUES
+(1, 1, 'content_type', 'Content-Type: application/json', 1);
 
 -- --------------------------------------------------------
 
@@ -191,7 +205,7 @@ CREATE TABLE `ls_ns_func` (
 --
 
 INSERT INTO `ls_ns_func` (`id`, `ns_id`, `ep_id`, `func_name`, `published`) VALUES
-(1, 2, 1, 'noop', 1),
+(1, 2, 1, 'namecom', 1),
 (2, 1, 0, 'noop', 1);
 
 -- --------------------------------------------------------
@@ -333,13 +347,13 @@ ALTER TABLE `ext_ep_func`
 -- AUTO_INCREMENT for table `ext_ep_func_arg`
 --
 ALTER TABLE `ext_ep_func_arg`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `ext_ep_func_header`
 --
 ALTER TABLE `ext_ep_func_header`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `ls_ep`

@@ -12,6 +12,14 @@ $fnlist['app1'] = [
     return [ 200, 'Hello World!' ];
   },
 
+  'process' => function($args=null) use ($fnlist){
+    $fnlist['unigw']['init']();
+    list ($code, $resp) = $fnlist['unigw']['core']($args);
+    print_r($resp);
+    
+    return [ $code, 'Hello World!' ];
+  },
+
 ];
 
 ?>

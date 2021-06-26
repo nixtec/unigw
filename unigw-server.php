@@ -69,7 +69,7 @@ foreach ($svc_listen as $k => $v) {
           $host = $path;
           $port = 0;
           $type = SWOOLE_UNIX_STREAM;
-          unlink($path);
+          @unlink($path);
         } else if (substr($host, 0, 1) == '[') { # ipv6 address
           $host = trim($host, '[]'); # remove the []
           $type = SWOOLE_SOCK_TCP6;
@@ -90,7 +90,7 @@ foreach ($svc_listen as $k => $v) {
           $host = $path;
           $port = 0;
           $type = SWOOLE_UNIX_STREAM;
-          unlink($path);
+          @unlink($path);
         } else if (substr($host, 0, 1) == '[') { # ipv6 address
           $host = trim($host, '[]'); # remove the []
           $type = SWOOLE_SOCK_TCP6;
@@ -111,7 +111,7 @@ foreach ($svc_listen as $k => $v) {
           $host = $path;
           $port = 0;
           $type = SWOOLE_UNIX_DGRAM;
-          unlink($path);
+          @unlink($path);
         } else if (substr($host, 0, 1) == '[') { # ipv6 address
           $host = trim($host, '[]'); # remove the []
           $type = SWOOLE_SOCK_UDP6;
@@ -156,6 +156,7 @@ require('services/core/session.php');
 require('services/core/pool.php');
 require('services/core/mysqlpool.php');
 #require('services/core/vars.php');
+require('services/unigw/unigw.php');
 
 # load application services
 require('services/app1/app.php');
@@ -167,56 +168,34 @@ $fnlist['app1']['init'](); # Initialize application app1
 
 // http && http2
 $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Response $response) use (&$fnlist) {
-
+  
   $__uri = $request->server['request_uri'];
-  #echo $__uri . "\n";
   $uparts = preg_split('@/@', $__uri, -1, PREG_SPLIT_NO_EMPTY);
-  #print_r($uparts);
-  if (count($uparts) == 1) array_push($uparts, 'home');
 
-  $ns = $uparts[0];
-  $fn = $uparts[1];
-  if (isset($fnlist[$ns]) && isset($fnlist[$ns][$fn])) {
+  $ns       = $uparts[0] ?? '-';
+  $ep       = $uparts[1] ?? '-';
+  $fn       = $uparts[2] ?? '-';
+  $getargs  = $request->get ?? [];
+  $postargs = $request->post ?? [];
+  $reqargs  = array_merge($getargs, $postargs);
 
-    $env = [];
-    $getargs = $request->get ?? [];
-    $postargs = $request->post ?? [];
-    $reqargs = array_merge($getargs, $postargs);
+  $env = [];
+  #$env['server']['HRTIME'] = hrtime(true);
+  #$env['server']['REMOTE_ADDR'] = $request->header['x-real-ip'] ?? null;
+  #$env['server']['HTTP_HOST'] = $request->header['x-forwarded-host'] ?? null;
+  #$env['server']['HTTPS'] = ($request->header['x-forwarded-proto'] ?? 'http') == 'https'? 'on' : 'off';
+  #$env['server']['TIME'] = $request->server['request_time'] ?? time();
 
-    #$env['server']['REMOTE_ADDR'] = $request->header['x-real-ip'] ?? null;
-    #$env['server']['HTTP_HOST'] = $request->header['x-forwarded-host'] ?? null;
-    #$env['server']['HTTPS'] = ($request->header['x-forwarded-proto'] ?? 'http') == 'https'? 'on' : 'off';
-    #$env['server']['TIME'] = $request->server['request_time'] ?? time();
+  $args = [ 'app' => $ns, 'ep' => $ep, 'fn' => $fn, 'request' => $request, 'response' => $response, 'getargs' => $getargs, 'postargs' => $postargs, 'reqargs' => $reqargs, 'env' => $env ];
+  list($code, $data) = $fnlist['app1']['process']($args);
 
-    $args = [ 'app' => $ns, 'fn' => $fn, 'request' => $request, 'response' => $response, 'getargs' => $getargs, 'postargs' => $postargs, 'reqargs' => $reqargs, 'env' => $env ];
-    list($code, $data) = $fnlist[$ns][$fn]($args);
-
-    # just for testing purpose we need to see request data in every request
-    #$env['server']['HRTIME'] = hrtime(true);
-    #echo "[ " . date('r', $env['server']['TIME']) . " ] [ " . $env['server']['REMOTE_ADDR'] . " ] Request: {$__uri}" . (count($reqargs) > 0 ? "?" . http_build_query($reqargs) : "") . ", Response Code: $code, Time (ns): " . (hrtime(true) - $env['server']['HRTIME']) . "\n";
-    /*
-    if ($code != 200) {
-      echo "\n*** DEBUG START ***\n";
-      echo "Response Code=$code\n";
-      echo "Response Data=$data\n";
-      echo "Environment Data:\n";
-      print_r($args['env']); # caller may modify the 'env' member
-      echo "\n*** DEBUG END ***\n";
-    }
-    */
-
-    /* not meant to serve static contents */
-    $response->header("Cache-Control", "no-store");
-    $response->header("Expires", "Thu, 19 Nov 1981 08:52:00 GMT"); # some really old day
-    $response->header("Pragma", "no-cache");
-    #$response->status($code);
-    $response->status(200); # We are sending 200 always, so that the client doesn't consider the error otherwise
-    $response->end($data);
-
-  } else {
-    $response->status(404);
-    $response->end('Resource Not Found');
-  }
+  /* not meant to serve static contents */
+  $response->header("Cache-Control", "no-store");
+  $response->header("Expires", "Thu, 19 Nov 1981 08:52:00 GMT"); # some really old day
+  $response->header("Pragma", "no-cache");
+  #$response->status($code);
+  $response->status(200); # We are sending 200 always, so that the client doesn't consider the error otherwise
+  $response->end($data);
 });
 
 

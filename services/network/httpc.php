@@ -39,11 +39,11 @@ $fnlist['httpc'] = [
 
     if (isset($args['auth'])) {
       switch ($args['auth']['auth_type']) {
-      case 'http_auth_basic':
-	$cli->setBasicAuth($args['auth']['auth_user'], $args['auth']['auth_pass']);
-	break;
-      default:
-	break;
+        case 'http_auth_basic':
+          $cli->setBasicAuth($args['auth']['auth_user'], $args['auth']['auth_pass']);
+        break;
+        default:
+        break;
       }
     }
 
@@ -65,7 +65,7 @@ $fnlist['httpc'] = [
 
   'get' => function ($args=null) use (&$fnlist) {
 
-    list ($code, $cli) = $fnlist['httpc'['__common']($args);
+    list ($code, $cli) = $fnlist['httpc']['__common']($args);
     $cli->setMethod('GET');
     # for 'GET', $args['path'] should hold the whole request line (/path/to/servlet?key=value&key=value)
     list ($code, $resp) = $fnlist['httpc']['__exec']($args);
@@ -76,7 +76,7 @@ $fnlist['httpc'] = [
 
   'post' => function ($args=null) use (&$fnlist) {
 
-    list ($code, $cli) = $fnlist['httpc'['__common']($args);
+    list ($code, $cli) = $fnlist['httpc']['__common']($args);
     $cli->setMethod('POST');
     # for 'POST', $args['path'] should hold the servlet path, while post data will be passed in $args['postdata']
     $cli->setData($args['postdata']);
