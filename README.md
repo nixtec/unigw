@@ -12,14 +12,18 @@ $ cd unigw
 
 $ php -f unigw-server.php
 
-if you want to run it from another branch
+if you want to run it from dev branch
 $ cd unigw
 
 $ git fetch
 
-$ git checkout branch-name
+$ git checkout dev
 
 $ php -f unigw-server.php
+
+
+#### Your MySQL table may need to be updated
+
 
 You can view test page by http://127.0.0.1:7014
 
