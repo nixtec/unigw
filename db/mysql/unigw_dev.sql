@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.4
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3314
--- Generation Time: Jun 24, 2021 at 02:23 PM
--- Server version: 10.2.22-MariaDB
--- PHP Version: 7.4.4
+-- Host: server_db
+-- Generation Time: Jun 27, 2021 at 02:25 PM
+-- Server version: 10.4.19-MariaDB-1:10.4.19+maria~bionic
+-- PHP Version: 7.4.20
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -72,7 +72,8 @@ CREATE TABLE `ext_ep_config` (
 --
 
 INSERT INTO `ext_ep_config` (`id`, `ep_id`, `ep_baseurl`, `need_auth`, `req_proto`, `req_method`, `req_datatype`, `resp_datatype`, `conn_timeout_msec`, `resp_timeout_msec`, `retry_after_conn_timeout`, `wait_before_retry_msec`, `published`) VALUES
-(1, 1, 'https://api.dev.name.com/v4/', 1, 'http/1.1', 'post', 'json', 'json', 10000, 60000, 0, 5000, 1);
+(1, 1, 'https://api.dev.name.com/v4/', 1, 'http/1.1', 'post', 'json', 'json', 10000, 60000, 0, 5000, 1),
+(2, 2, 'https://api.sandbox.namecheap.com/xml.response/', 0, 'http/1.1', 'get', 'json', 'xml', 10000, 60000, 0, 5000, 1);
 
 -- --------------------------------------------------------
 
@@ -96,7 +97,8 @@ CREATE TABLE `ext_ep_func` (
 --
 
 INSERT INTO `ext_ep_func` (`id`, `ep_id`, `func_id`, `func_name_ns`, `func_name_ep`, `has_args`, `has_headers`, `published`) VALUES
-(1, 1, 1, 'hello', 'domains:checkAvailability', 1, 1, 1);
+(1, 1, 1, 'namecom_domain_check', 'domains:checkAvailability', 1, 1, 1),
+(3, 2, 2, 'namecheap_domain_check', '', 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -109,6 +111,7 @@ CREATE TABLE `ext_ep_func_arg` (
   `func_id` int(11) NOT NULL,
   `arg_key` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
   `arg_value` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `val_type` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=fixed, 2=user-defined',
   `published` tinyint(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -116,8 +119,14 @@ CREATE TABLE `ext_ep_func_arg` (
 -- Dumping data for table `ext_ep_func_arg`
 --
 
-INSERT INTO `ext_ep_func_arg` (`id`, `func_id`, `arg_key`, `arg_value`, `published`) VALUES
-(1, 1, 'names', 'domainNames', 1);
+INSERT INTO `ext_ep_func_arg` (`id`, `func_id`, `arg_key`, `arg_value`, `val_type`, `published`) VALUES
+(1, 1, 'names', 'domainNames', 2, 1),
+(2, 2, 'names', 'DomainList', 2, 1),
+(3, 2, 'ApiUser', 'zoaddar', 1, 1),
+(4, 2, 'ApiKey', 'b2e04602a2a84dbd849c52482599823d', 1, 1),
+(5, 2, 'UserName', 'zoaddar', 1, 1),
+(6, 2, 'Command', 'namecheap.domains.check', 1, 1),
+(7, 2, 'ClientIp', '103.88.140.78', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -138,7 +147,8 @@ CREATE TABLE `ext_ep_func_header` (
 --
 
 INSERT INTO `ext_ep_func_header` (`id`, `func_id`, `arg_key`, `arg_value`, `published`) VALUES
-(1, 1, 'content_type', 'Content-Type: application/json', 1);
+(1, 1, 'content_type', 'Content-Type: application/json', 1),
+(3, 2, 'content_type', 'Content-Type: application/xml', 1);
 
 -- --------------------------------------------------------
 
@@ -329,31 +339,31 @@ ALTER TABLE `map_ns_ep`
 -- AUTO_INCREMENT for table `ext_ep_auth`
 --
 ALTER TABLE `ext_ep_auth`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `ext_ep_config`
 --
 ALTER TABLE `ext_ep_config`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `ext_ep_func`
 --
 ALTER TABLE `ext_ep_func`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `ext_ep_func_arg`
 --
 ALTER TABLE `ext_ep_func_arg`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `ext_ep_func_header`
 --
 ALTER TABLE `ext_ep_func_header`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `ls_ep`

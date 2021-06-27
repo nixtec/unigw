@@ -157,6 +157,7 @@ require('services/core/pool.php');
 require('services/core/mysqlpool.php');
 #require('services/core/vars.php');
 require('services/unigw/unigw.php');
+require('services/network/httpc.php');
 
 # load application services
 require('services/app1/app.php');
@@ -170,32 +171,34 @@ $fnlist['app1']['init'](); # Initialize application app1
 $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Response $response) use (&$fnlist) {
   
   $__uri = $request->server['request_uri'];
-  $uparts = preg_split('@/@', $__uri, -1, PREG_SPLIT_NO_EMPTY);
+  if(strpos($__uri,'favicon.ico') === false){
+    $uparts = preg_split('@/@', $__uri, -1, PREG_SPLIT_NO_EMPTY);
+    
+    $ns       = $uparts[0] ?? '-';
+    $ep       = $uparts[1] ?? '-';
+    $fn       = $uparts[2] ?? '-';
+    $getargs  = $request->get ?? [];
+    $postargs = $request->post ?? [];
+    $reqargs  = array_merge($getargs, $postargs);
 
-  $ns       = $uparts[0] ?? '-';
-  $ep       = $uparts[1] ?? '-';
-  $fn       = $uparts[2] ?? '-';
-  $getargs  = $request->get ?? [];
-  $postargs = $request->post ?? [];
-  $reqargs  = array_merge($getargs, $postargs);
+    $env = [];
+    #$env['server']['HRTIME'] = hrtime(true);
+    #$env['server']['REMOTE_ADDR'] = $request->header['x-real-ip'] ?? null;
+    #$env['server']['HTTP_HOST'] = $request->header['x-forwarded-host'] ?? null;
+    #$env['server']['HTTPS'] = ($request->header['x-forwarded-proto'] ?? 'http') == 'https'? 'on' : 'off';
+    #$env['server']['TIME'] = $request->server['request_time'] ?? time();
 
-  $env = [];
-  #$env['server']['HRTIME'] = hrtime(true);
-  #$env['server']['REMOTE_ADDR'] = $request->header['x-real-ip'] ?? null;
-  #$env['server']['HTTP_HOST'] = $request->header['x-forwarded-host'] ?? null;
-  #$env['server']['HTTPS'] = ($request->header['x-forwarded-proto'] ?? 'http') == 'https'? 'on' : 'off';
-  #$env['server']['TIME'] = $request->server['request_time'] ?? time();
+    $args = [ 'app' => $ns, 'ep' => $ep, 'fn' => $fn, 'request' => $request, 'response' => $response, 'getargs' => $getargs, 'postargs' => $postargs, 'reqargs' => $reqargs, 'env' => $env ];
+    list($code, $data) = $fnlist['app1']['process']($args);
 
-  $args = [ 'app' => $ns, 'ep' => $ep, 'fn' => $fn, 'request' => $request, 'response' => $response, 'getargs' => $getargs, 'postargs' => $postargs, 'reqargs' => $reqargs, 'env' => $env ];
-  list($code, $data) = $fnlist['app1']['process']($args);
-
-  /* not meant to serve static contents */
-  $response->header("Cache-Control", "no-store");
-  $response->header("Expires", "Thu, 19 Nov 1981 08:52:00 GMT"); # some really old day
-  $response->header("Pragma", "no-cache");
-  #$response->status($code);
-  $response->status(200); # We are sending 200 always, so that the client doesn't consider the error otherwise
-  $response->end($data);
+    /* not meant to serve static contents */
+    $response->header("Cache-Control", "no-store");
+    $response->header("Expires", "Thu, 19 Nov 1981 08:52:00 GMT"); # some really old day
+    $response->header("Pragma", "no-cache");
+    #$response->status($code);
+    $response->status(200); # We are sending 200 always, so that the client doesn't consider the error otherwise
+    $response->end($data);
+  }
 });
 
 

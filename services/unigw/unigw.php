@@ -11,7 +11,7 @@ $fnlist['unigw'] = [
     $dbconfig = [
       'title'    => 'MySQL Pool',
       'host'     => '127.0.0.1',
-      'port'     => 3306,
+      'port'     => 3314,
       'sock'     => '/var/run/mysqld/mysqld-nixtec.sock',
       'dbname'   => 'unigw_dev',
       'charset'  => 'utf8mb4',
@@ -69,10 +69,11 @@ $fnlist['unigw'] = [
     }
 
     $tbl = "ls_ep"; # get end-point type-id
-    $sql = "SELECT ep_type FROM `{$tbl}` WHERE `ep_id` IN({$ep_id}) AND `ep_keyword`='{$ep_name}' AND `published`=1;";
+    $sql = "SELECT ep_id,ep_type FROM `{$tbl}` WHERE `ep_id` IN({$ep_id}) AND `ep_keyword`='{$ep_name}' AND `published`=1;";
     try{
       $result = $db->query($sql);
       if($row = $result->fetch_assoc()){
+        $ep_id = $row['ep_id'];
         $type_id = $row['ep_type'];
       } else{
         throw new Exception('Query Execution Failed [ep].');
@@ -103,7 +104,8 @@ $fnlist['unigw'] = [
       goto out;
 
     } else{
-      $robj->msg  = "success";
+      $robj->status = 0;
+      $robj->msg = "success";
       $robj->resp = $resp;
     }
 
@@ -158,13 +160,23 @@ $fnlist['unigw'] = [
       $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`='{$ep_id}' AND `published`=1";
       try{
         if($result = $db->query($sql)){
+          $params  = [];
           $reqargs = $args['reqargs'];
 
           while($row = $result->fetch_assoc()){
-            if(!isset($reqargs[$row['arg_key']])){
-              return [403, "The requested argument is not valid."];
+            if($row['val_type'] == 1){
+              $params[$row['arg_key']] = $row['arg_value'];
+            } else{
+              if(!isset($reqargs[$row['arg_key']])){
+                return [403, "The requested argument is not valid."];
+              }
+              $params[$row['arg_value']] = $reqargs[$row['arg_key']];
             }
-            $http_info['postdata'][$row['arg_value']] = $reqargs[$row['arg_key']];
+          }
+          if($svc_info['config']['req_method'] == 'post'){
+            $http_info['postdata'] = $params;
+          } else if($svc_info['config']['req_method'] == 'get'){
+            $http_info['url'] = sprintf("%s?%s", $http_info['url'], http_build_query($params));
           }
         } else{
           throw new Exception('Query Execution Failed [func_arg].');
@@ -206,7 +218,9 @@ $fnlist['unigw'] = [
       }
     }
 
-    print_r($svc_info);
+    $request = $fnlist['httpc'][$svc_info['config']['req_method']]($http_info);
+
+    print_r($request);
 
     return [200, $http_info];
   }
