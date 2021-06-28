@@ -158,6 +158,7 @@ require('services/core/mysqlpool.php');
 #require('services/core/vars.php');
 require('services/unigw/unigw.php');
 require('services/network/httpc.php');
+require('services/network/httpcurl.php');
 
 # load application services
 require('services/app1/app.php');

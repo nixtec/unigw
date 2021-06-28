@@ -155,8 +155,9 @@ $fnlist['unigw'] = [
 
     $http_info['url'] = $svc_info['config']['ep_baseurl'] . $svc_info['ep_func']['func_name_ep'];
 
+    // end-point function argument
     if($svc_info['ep_func']['has_args'] == 1){
-      $tbl = "{$tbl_prefix}ep_func_arg"; // end-point function argument
+      $tbl = "{$tbl_prefix}ep_func_arg";
       $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`='{$ep_id}' AND `published`=1";
       try{
         if($result = $db->query($sql)){
@@ -165,18 +166,18 @@ $fnlist['unigw'] = [
 
           while($row = $result->fetch_assoc()){
             if($row['val_type'] == 1){
-              $params[$row['arg_key']] = $row['arg_value'];
+              $http_info['data'][$row['arg_key']] = $row['arg_value'];
             } else{
               if(!isset($reqargs[$row['arg_key']])){
                 return [403, "The requested argument is not valid."];
               }
-              $params[$row['arg_value']] = $reqargs[$row['arg_key']];
+
+              if($row['is_parent'] == 1){
+                $http_info['data'][$row['arg_value']][] = $reqargs[$row['arg_key']];
+              } else{
+                $http_info['data'][$row['arg_value']] = $reqargs[$row['arg_key']];
+              }
             }
-          }
-          if($svc_info['config']['req_method'] == 'post'){
-            $http_info['postdata'] = $params;
-          } else if($svc_info['config']['req_method'] == 'get'){
-            $http_info['url'] = sprintf("%s?%s", $http_info['url'], http_build_query($params));
           }
         } else{
           throw new Exception('Query Execution Failed [func_arg].');
@@ -186,13 +187,14 @@ $fnlist['unigw'] = [
       }
     }
 
+    // end-point function header
     if($svc_info['ep_func']['has_headers'] == 1){
-      $tbl = "{$tbl_prefix}ep_func_header"; // end-point function header
+      $tbl = "{$tbl_prefix}ep_func_header";
       $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`='{$ep_id}' AND `published`=1";
       try{
         if($result = $db->query($sql)){
           while($row = $result->fetch_assoc()){
-            $http_info['headers'][] = $row['arg_value'];
+            $http_info['headers'][$row['arg_key']] = $row['arg_value'];
           }
         } else{
           throw new Exception('Query Execution Failed [func_header].');
@@ -218,12 +220,23 @@ $fnlist['unigw'] = [
       }
     }
 
-    $request = $fnlist['httpc'][$svc_info['config']['req_method']]($http_info);
+    list($code, $resp) = $fnlist['httpcurl'][$svc_info['config']['req_method']]($http_info);
+    if($code == 200){
+      $resp = $fnlist['unigw'][$svc_info['config']['resp_datatype']]($resp);
+    }
 
-    print_r($request);
+    return [200, $resp];
+  },
 
-    return [200, $http_info];
-  }
+  'json' => function ($args=null){
+    return json_decode($args);
+  },
+
+  'xml' => function ($args=null){
+    $data = @new SimpleXMLElement($args);
+		$data = json_decode(json_encode($data));
+    return $data;
+  },
 
 ];
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: server_db
--- Generation Time: Jun 27, 2021 at 02:25 PM
+-- Generation Time: Jun 28, 2021 at 03:01 PM
 -- Server version: 10.4.19-MariaDB-1:10.4.19+maria~bionic
 -- PHP Version: 7.4.20
 
@@ -41,8 +41,8 @@ CREATE TABLE `ext_ep_auth` (
 --
 
 INSERT INTO `ext_ep_auth` (`id`, `ep_id`, `auth_key`, `auth_value`, `auth_arg_desc`, `published`) VALUES
-(1, 1, 'username', 'netcloudsys-test', 'Authentication Username', 1),
-(2, 1, 'password', '1d3f8592936d3fe29320413f68e30b1d64431e4d', 'Authentication Password (Token)', 1),
+(1, 1, 'auth_user', 'netcloudsys-test', 'Authentication Username', 1),
+(2, 1, 'auth_pass', '1d3f8592936d3fe29320413f68e30b1d64431e4d', 'Authentication Password (Token)', 1),
 (3, 1, 'auth_type', 'http_auth_basic', '', 1);
 
 -- --------------------------------------------------------
@@ -112,6 +112,7 @@ CREATE TABLE `ext_ep_func_arg` (
   `arg_key` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
   `arg_value` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
   `val_type` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1=fixed, 2=user-defined',
+  `is_parent` tinyint(1) NOT NULL DEFAULT 2,
   `published` tinyint(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -119,14 +120,14 @@ CREATE TABLE `ext_ep_func_arg` (
 -- Dumping data for table `ext_ep_func_arg`
 --
 
-INSERT INTO `ext_ep_func_arg` (`id`, `func_id`, `arg_key`, `arg_value`, `val_type`, `published`) VALUES
-(1, 1, 'names', 'domainNames', 2, 1),
-(2, 2, 'names', 'DomainList', 2, 1),
-(3, 2, 'ApiUser', 'zoaddar', 1, 1),
-(4, 2, 'ApiKey', 'b2e04602a2a84dbd849c52482599823d', 1, 1),
-(5, 2, 'UserName', 'zoaddar', 1, 1),
-(6, 2, 'Command', 'namecheap.domains.check', 1, 1),
-(7, 2, 'ClientIp', '103.88.140.78', 1, 1);
+INSERT INTO `ext_ep_func_arg` (`id`, `func_id`, `arg_key`, `arg_value`, `val_type`, `is_parent`, `published`) VALUES
+(1, 1, 'names', 'domainNames', 2, 1, 1),
+(2, 2, 'names', 'DomainList', 2, 2, 1),
+(3, 2, 'ApiUser', 'zoaddar', 1, 2, 1),
+(4, 2, 'ApiKey', 'b2e04602a2a84dbd849c52482599823d', 1, 2, 1),
+(5, 2, 'UserName', 'zoaddar', 1, 2, 1),
+(6, 2, 'Command', 'namecheap.domains.check', 1, 2, 1),
+(7, 2, 'ClientIp', '46.105.104.51', 1, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -147,8 +148,8 @@ CREATE TABLE `ext_ep_func_header` (
 --
 
 INSERT INTO `ext_ep_func_header` (`id`, `func_id`, `arg_key`, `arg_value`, `published`) VALUES
-(1, 1, 'content_type', 'Content-Type: application/json', 1),
-(3, 2, 'content_type', 'Content-Type: application/xml', 1);
+(1, 1, 'Content-Type', 'application/json', 1),
+(3, 2, 'Content-Type', 'application/xml', 1);
 
 -- --------------------------------------------------------
 

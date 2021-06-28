@@ -17,7 +17,7 @@ $fnlist['app1'] = [
     list ($code, $resp) = $fnlist['unigw']['core']($args);
     print_r($resp);
     
-    return [ $code, 'Hello World!' ];
+    return [ $code, json_encode($resp) ];
   },
 
 ];
