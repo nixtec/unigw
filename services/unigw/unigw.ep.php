@@ -139,16 +139,19 @@ $fnlist['unigw.ep'] = [
   },
 
   'func.get' => function ($args=null) use (&$fnlist) {
-    # input: ep_id, func_name_ep
+    # input: ep_id, func_name
+    $func_name_ns = $args['func_name'];
     # output: array [ ep_id, func_id, func_name_ns, func_name_ep, has_args, has_headers ]
     return [ 200, [ . ] ];
   },
 
-  'func.getByNs' => function ($args=null) use (&$fnlist) {
-    # input: ep_id, func_name_ns
+  'func.getByEp' => function ($args=null) use (&$fnlist) {
+    # input: ep_id, func_name
+    $func_name_ep = $args['func_name'];
     # output: array [ ep_id, func_id, func_name_ns, func_name_ep, has_args, has_headers ]
     return [ 200, [ . ] ];
   },
+
 
   'func.update' => function ($args=null) use (&$fnlist) {
     # input: ep_id, func_id, [one or more of: func_name_ns, func_name_ep, has_args, has_headers ]

@@ -51,23 +51,20 @@ $fnlist['unigw'] = [
     #
     if ($ep == "_") {
       # special handling of endpoint
-      $func_ns = $func;
-      $xargs = [ 'ns_id' => $nsid, 'func_name' => $func_ns, ... ];
+      $xargs = [ 'ns_id' => $nsid, 'func_name' => $func, ... ];
       list ($code, $epinfo1) = $fnlist['unigw.ns']['func.get']($xargs);
       $xargs = [ 'ep_id' => $epinfo1['ep_id'], ... ];
       list ($code, $epinfo) = $fnlist['unigw.ep']['getById']($xargs);
-      $xargs = [ 'ep_id' => $epinfo['ep_id'], 'func_name_ns' => $func_ns, ... ];
-      list ($code, $funcinfo) = $fnlist['unigw.ep']['func.getByNs']($xargs);
     } else {
-      $func_ep = $func;
       $xargs = [ 'ep_keyword' => $ep, ... ];
       list ($code, $epinfo) = $fnlist['unigw.ep']['get']($xargs);
-      $xargs = [ 'func_name_ep' => $ep, ... ];
-      list ($code, $funcinfo) = $fnlist['unigw.ep']['func.get']($xargs);
-      $func_id = $funcinfo['func_id'];
     }
 
+    $xargs = [ 'ep_id' => $epinfo['ep_id'], 'func_name' => $func, ... ];
+    list ($code, $funcinfo) = $fnlist['unigw.ep']['func.get']($xargs);
+    $func_id = $funcinfo['func_id'];
     # if got function record, then continue down, otherwise out
+
     $xargs = [ 'ep_id' => $epinfo['ep_id'], ... ];
     list ($code, $epcfginfo) = $fnlist['unigw.ep']['config.get']($xargs);
 
