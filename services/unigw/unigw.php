@@ -22,121 +22,98 @@ $fnlist['unigw'] = [
   },
 
   # following is just demonstration code
-  # After writing the code the database schema was changed, so it has to be written from scratch
-  'external' => function ($args=null) use (&$fnlist) {
+  'exec' => function ($args=null) use (&$fnlist) {
     $rcode = 500;
     $robj = new stdClass();
     $robj->status = 1;
     $robj->msg = 'Something went wrong.';
     $robj->resp = false;
 
+    # get DB Handle from Pool
+
+    /*
     list ($code, $db) = $fnlist['pool']['get']([ 'app' => 'unigw', 'id' => 'mysqlpool' ]);
     if ($code != 200) {
       $robj->msg = 'DB Connection Failed.';
       goto out;
     }
+     */
 
-    $namespace = $args['namespace'] ?? 'default';
-    $keyword = $args['keyword'] ?? 'nokeyword';
-    $keyfunc = $args['keyfunc'] ?? 'nokeyfunc';
 
-    $svc_info = [];
+    $ns = $args['ns'];
+    $ep = $args['ep'];
+    $func = $args['func'];
 
-    $tbl_prefix = "ext_"; # Default, will be overriden by subsequent lines
-    $tbl = "ugw_ns"; # first look up in namespace
-    $sql = "SELECT * FROM `{$tbl}` WHERE `ns`='{$namespace}' AND `svc_keyword`='{$keyword}' AND `published`=1 LIMIT 1";
-    try {
-      $result = $db->query($sql);
-      $row = $result->fetch_assoc();
-      $tbl_prefix = $row['svc_prefix'];
-      $svc_id = $row['svc_id'];
-      $svc_info['ns'] = $row;
-    } catch (Exception $e) {
-      $robj->msg = 'Query Execution Failed [ns].';
-      goto out;
+    $xargs = [ 'ns_keyword' => $ns, ... ]
+    list ($code, $nsinfo) = $fnlist['unigw.ns']['get']($xargs);
+    #
+    # if got record, then continue down, otherwise out
+    #
+    if ($ep == "_") {
+      # special handling of endpoint
+      $func_ns = $func;
+      $xargs = [ 'ns_id' => $nsid, 'func_name' => $func_ns, ... ];
+      list ($code, $epinfo1) = $fnlist['unigw.ns']['func.get']($xargs);
+      $xargs = [ 'ep_id' => $epinfo1['ep_id'], ... ];
+      list ($code, $epinfo) = $fnlist['unigw.ep']['getById']($xargs);
+      $xargs = [ 'ep_id' => $epinfo['ep_id'], 'func_name_ns' => $func_ns, ... ];
+      list ($code, $funcinfo) = $fnlist['unigw.ep']['func.getByNs']($xargs);
+    } else {
+      $func_ep = $func;
+      $xargs = [ 'ep_keyword' => $ep, ... ];
+      list ($code, $epinfo) = $fnlist['unigw.ep']['get']($xargs);
+      $xargs = [ 'func_name_ep' => $ep, ... ];
+      list ($code, $funcinfo) = $fnlist['unigw.ep']['func.get']($xargs);
+      $func_id = $funcinfo['func_id'];
     }
 
-    $tbl = "{$tbl_prefix}common";
-    $sql = "SELECT * FROM `{$tbl}` WHERE `svc_ic`={$svc_id} AND `published`=1 LIMIT 1";
-    try {
-      $result = $db->query($sql);
-      $row = $result->fetch_assoc();
-      $need_auth = $row['need_auth'];
-      $svc_info['common'] = $row;
-    } catch (Exception $e) {
-      $robj->msg = 'Query Execution Failed [common].';
-      goto out;
+    # if got function record, then continue down, otherwise out
+    $xargs = [ 'ep_id' => $epinfo['ep_id'], ... ];
+    list ($code, $epcfginfo) = $fnlist['unigw.ep']['config.get']($xargs);
+
+    # if need_auth is true (1)
+    # need to resolve 'auth_id'
+    $auth_keyword = $args['auth_keyword'];
+    if ($ep == '_') {
+      $xargs = [ 'vauth_keyword' => $auth_keyword, ... ];
+      list ($code, $vauthinfo) = $fnlist['unigw.vauth']['get']($xargs);
+      $xargs = [ 'ep_id' => $epinfo['ep_id'], 'vauth_id' => $auth_keyword, ... ];
+      list ($code, $vauthepinfo) = $fnlist['unigw.vauth']['ep.get']($xargs);
+      # we got 'auth_id' here
+      $auth_id = $vauthepinfo['auth_id'];
+    } else {
+      $xargs = [ 'ep_id' => $epinfo['ep_id'], 'auth_keyword' => $auth_keyword, ... ];
+      list ($code, $authinfo) = $fnlist['unigw.vauth']['get']($xargs);
+      # we got 'auth_id' here
+      $auth_id = $authinfo['auth_id'];
     }
 
+    # we got 'auth_id' here
+    $xargs = [ 'auth_id' => $auth_id, ... ];
+    list ($code, $autharginfo) = $fnlist['unigw.ep']['auth.arg.list']($xargs);
 
-    if ($need_auth) {
-      $tbl = "{$tbl_prefix}auth";
-      $sql = "SELECT * FROM `{$tbl}` WHERE `svc_id`={$svc_id} AND `published`=1";
-      try {
-        $result = $db->query($sql);
-        while ($row = $result->fetch_assoc()) {
-          $svc_info['auth'][] = $row;
-        }
-      } catch (Exception $e) {
-        $robj->msg = 'Query Execution Failed [auth].';
-        goto out;
-      }
-    }
+    # if $funcinfo['has_args'] is true
+    $xargs = [ 'func_id' => $funcinfo['func_id'], ... ];
+    list ($code, $funcarginfo) = $fnlist['unigw.ep']['func.arg.list']($xargs);
 
-    $tbl = "{$tbl_prefix}func";
-    $sql = "SELECT * FROM `{$tbl}` WHERE `svc_id`={$svc_id} AND `func_name`='{$keyfunc}' AND `published`=1 LIMIT 1";
-    try {
-      $result = $db->query($sql);
-      $row = $result->fetch_assoc();
-      $svc_info['func'] = $row;
-      $func_has_args = $row['has_args'];
-      $func_has_headers = $row['has_headers'];
-      $func_id = $row['id'];
-    } catch (Exception $e) {
-      $robj->msg = 'Query Execution Failed [func].';
-      goto out;
-    }
+    # if $funcinfo['has_headers'] is true
+    $xargs = [ 'func_id' => $funcinfo['func_id'], ... ];
+    list ($code, $funcheaderinfo) = $fnlist['unigw.ep']['func.header.list']($xargs);
 
-    if ($func_has_args != 0) {
-      $tbl = "{$tbl_prefix}func_arg";
-      $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`={$func_id} AND `published`=1";
-      try {
-        $result = $db->query($sql);
-        while ($row = $result->fetch_assoc()) {
-          $svc_info['func_arg'][] = $row;
-        }
-      } catch (Exception $e) {
-        $robj->msg = 'Query Execution Failed [func_arg].';
-        goto out;
-      }
-    }
-
-    if ($func_has_headers != 0) {
-      $tbl = "{$tbl_prefix}func_header";
-      $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`={$func_id} AND `published`=1";
-      try {
-        $result = $db->query($sql);
-        while ($row = $result->fetch_assoc()) {
-          $svc_info['func_header'][] = $row;
-        }
-      } catch (Exception $e) {
-        $robj->msg = 'Query Execution Failed [func_header].';
-        goto out;
-      }
-    }
-
-
-    # Now we have all the information to invoke real API call
-
-    
+    # we got all necessary information to prepare real HTTP CLIENT call
+    # we prepare function argument array accordingly
 
 
 
+
+    # cleanup block to be executed
+    /*
     out:
     if (isset($db) && $db != false) {
       $fnlist['pool']['put']([ 'app' => 'unigw', 'id' => 'mysqlpool', 'handle' => $db ]);
       $db = false;
     }
+     */
 
     return [ $rcode, json_encode($robj) ];
   },

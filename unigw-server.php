@@ -175,48 +175,48 @@ $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Respo
   if (count($uparts) == 1) array_push($uparts, 'home');
 
   $ns = $uparts[0];
-  $fn = $uparts[1];
-  if (isset($fnlist[$ns]) && isset($fnlist[$ns][$fn])) {
+  $ep = $uparts[1];
+  $fn = $uparts[2];
 
-    $env = [];
-    $getargs = $request->get ?? [];
-    $postargs = $request->post ?? [];
-    $reqargs = array_merge($getargs, $postargs);
 
-    #$env['server']['REMOTE_ADDR'] = $request->header['x-real-ip'] ?? null;
-    #$env['server']['HTTP_HOST'] = $request->header['x-forwarded-host'] ?? null;
-    #$env['server']['HTTPS'] = ($request->header['x-forwarded-proto'] ?? 'http') == 'https'? 'on' : 'off';
-    #$env['server']['TIME'] = $request->server['request_time'] ?? time();
+  $env = [];
+  $getargs = $request->get ?? [];
+  $postargs = $request->post ?? [];
+  $reqargs = array_merge($getargs, $postargs);
 
-    $args = [ 'app' => $ns, 'fn' => $fn, 'request' => $request, 'response' => $response, 'getargs' => $getargs, 'postargs' => $postargs, 'reqargs' => $reqargs, 'env' => $env ];
-    list($code, $data) = $fnlist[$ns][$fn]($args);
+  #$env['server']['REMOTE_ADDR'] = $request->header['x-real-ip'] ?? null;
+  #$env['server']['HTTP_HOST'] = $request->header['x-forwarded-host'] ?? null;
+  #$env['server']['HTTPS'] = ($request->header['x-forwarded-proto'] ?? 'http') == 'https'? 'on' : 'off';
+  #$env['server']['TIME'] = $request->server['request_time'] ?? time();
 
-    # just for testing purpose we need to see request data in every request
-    #$env['server']['HRTIME'] = hrtime(true);
-    #echo "[ " . date('r', $env['server']['TIME']) . " ] [ " . $env['server']['REMOTE_ADDR'] . " ] Request: {$__uri}" . (count($reqargs) > 0 ? "?" . http_build_query($reqargs) : "") . ", Response Code: $code, Time (ns): " . (hrtime(true) - $env['server']['HRTIME']) . "\n";
-    /*
-    if ($code != 200) {
-      echo "\n*** DEBUG START ***\n";
-      echo "Response Code=$code\n";
-      echo "Response Data=$data\n";
-      echo "Environment Data:\n";
-      print_r($args['env']); # caller may modify the 'env' member
-      echo "\n*** DEBUG END ***\n";
-    }
-    */
+  #$args = [ 'ns' => $ns, 'ep' => $ep, 'fn' => $fn, 'request' => $request, 'response' => $response, 'getargs' => $getargs, 'postargs' => $postargs, 'reqargs' => $reqargs, 'env' => $env ];
+  #list($code, $data) = $fnlist[$ns][$fn]($args);
 
-    /* not meant to serve static contents */
-    $response->header("Cache-Control", "no-store");
-    $response->header("Expires", "Thu, 19 Nov 1981 08:52:00 GMT"); # some really old day
-    $response->header("Pragma", "no-cache");
-    #$response->status($code);
-    $response->status(200); # We are sending 200 always, so that the client doesn't consider the error otherwise
-    $response->end($data);
+  $args = [ 'ns' => $ns, 'ep' => $ep, 'fn' => $fn, 'request' => $request, 'response' => $response, 'getargs' => $getargs, 'postargs' => $postargs, 'reqargs' => $reqargs, 'env' => $env ];
+  list ($code, $data) = $fnlist['unigw']['exec']($args);
 
-  } else {
-    $response->status(404);
-    $response->end('Resource Not Found');
+  # just for testing purpose we need to see request data in every request
+  #$env['server']['HRTIME'] = hrtime(true);
+  #echo "[ " . date('r', $env['server']['TIME']) . " ] [ " . $env['server']['REMOTE_ADDR'] . " ] Request: {$__uri}" . (count($reqargs) > 0 ? "?" . http_build_query($reqargs) : "") . ", Response Code: $code, Time (ns): " . (hrtime(true) - $env['server']['HRTIME']) . "\n";
+  /*
+  if ($code != 200) {
+    echo "\n*** DEBUG START ***\n";
+    echo "Response Code=$code\n";
+    echo "Response Data=$data\n";
+    echo "Environment Data:\n";
+    print_r($args['env']); # caller may modify the 'env' member
+    echo "\n*** DEBUG END ***\n";
   }
+  */
+
+  /* not meant to serve static contents */
+  $response->header("Cache-Control", "no-store");
+  $response->header("Expires", "Thu, 19 Nov 1981 08:52:00 GMT"); # some really old day
+  $response->header("Pragma", "no-cache");
+  #$response->status($code);
+  $response->status(200); # We are sending 200 always, so that the client doesn't consider the error otherwise
+  $response->end($data);
+
 });
 
 
