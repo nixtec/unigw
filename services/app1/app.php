@@ -15,7 +15,7 @@ $fnlist['app1'] = [
   'process' => function($args=null) use ($fnlist){
     $fnlist['unigw']['init']();
     list ($code, $resp) = $fnlist['unigw']['core']($args);
-    print_r($resp);
+    // print_r($resp);
     
     return [ $code, json_encode($resp) ];
   },

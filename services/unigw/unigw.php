@@ -141,7 +141,7 @@ $fnlist['unigw'] = [
     }
 
     $tbl = "{$tbl_prefix}ep_func"; // get end-point function info
-    $sql = "SELECT * FROM `{$tbl}` WHERE `ep_id`='{$ep_id}' AND `published`=1";
+    $sql = "SELECT * FROM `{$tbl}` WHERE `ep_id`='{$ep_id}' AND func_name_ns='{$args['wf']}' AND `published`=1";
     try{
       $result = $db->query($sql);
       if($row = $result->fetch_assoc()){
@@ -153,12 +153,13 @@ $fnlist['unigw'] = [
       return [403, $e->getMessage()];
     }
 
+    $func_id = $svc_info['ep_func']['func_id'];
     $http_info['url'] = $svc_info['config']['ep_baseurl'] . $svc_info['ep_func']['func_name_ep'];
 
     // end-point function argument
     if($svc_info['ep_func']['has_args'] == 1){
       $tbl = "{$tbl_prefix}ep_func_arg";
-      $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`='{$ep_id}' AND `published`=1";
+      $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`='{$func_id}' AND `published`=1";
       try{
         if($result = $db->query($sql)){
           $params  = [];
@@ -190,7 +191,7 @@ $fnlist['unigw'] = [
     // end-point function header
     if($svc_info['ep_func']['has_headers'] == 1){
       $tbl = "{$tbl_prefix}ep_func_header";
-      $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`='{$ep_id}' AND `published`=1";
+      $sql = "SELECT * FROM `{$tbl}` WHERE `func_id`='{$func_id}' AND `published`=1";
       try{
         if($result = $db->query($sql)){
           while($row = $result->fetch_assoc()){

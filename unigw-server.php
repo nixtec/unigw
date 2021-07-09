@@ -177,7 +177,7 @@ $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Respo
     
     $ns       = $uparts[0] ?? '-';
     $ep       = $uparts[1] ?? '-';
-    $fn       = $uparts[2] ?? '-';
+    $wf       = $uparts[2] ?? '-';
     $getargs  = $request->get ?? [];
     $postargs = $request->post ?? [];
     $reqargs  = array_merge($getargs, $postargs);
@@ -189,7 +189,7 @@ $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Respo
     #$env['server']['HTTPS'] = ($request->header['x-forwarded-proto'] ?? 'http') == 'https'? 'on' : 'off';
     #$env['server']['TIME'] = $request->server['request_time'] ?? time();
 
-    $args = [ 'app' => $ns, 'ep' => $ep, 'fn' => $fn, 'request' => $request, 'response' => $response, 'getargs' => $getargs, 'postargs' => $postargs, 'reqargs' => $reqargs, 'env' => $env ];
+    $args = [ 'app' => $ns, 'ep' => $ep, 'wf' => $wf, 'request' => $request, 'response' => $response, 'getargs' => $getargs, 'postargs' => $postargs, 'reqargs' => $reqargs, 'env' => $env ];
     list($code, $data) = $fnlist['app1']['process']($args);
 
     /* not meant to serve static contents */
